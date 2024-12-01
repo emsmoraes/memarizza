@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: 'memarizza'
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: memarizza
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: memarizza
+      PGDATA: /data/postgres
