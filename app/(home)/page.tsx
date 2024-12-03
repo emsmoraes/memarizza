@@ -1,7 +1,7 @@
 'use client'
 
 import { signIn, useSession } from "next-auth/react";
-import { Button } from "./_components/ui/button";
+import { Button } from "../_components/ui/button";
 
 export default function Home() {
 

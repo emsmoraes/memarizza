@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "./_components/theme-provider";
 import AuthProvider from "./_providers/next-auth";
+import { SidebarProvider, SidebarTrigger } from "./_components/ui/sidebar";
+import Desktop from "./_components/Navbar";
+import { Toaster } from "./_components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,16 +21,27 @@ export default function RootLayout({
       <head />
       <body>
         <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SidebarProvider>
+              <Desktop />
+              <main className="flex w-full flex-col gap-7 sm:flex-row sm:px-6 sm:py-6">
+                <div className="block w-full bg-gray-400/20 px-2 py-5 sm:hidden">
+                  <SidebarTrigger />
+                </div>
+
+                <div className="w-full px-4 sm:w-auto sm:px-6 sm:py-6">
+                  {children}
+                </div>
+              </main>
+            </SidebarProvider>
+            <Toaster />
+          </ThemeProvider>
         </AuthProvider>
-       
       </body>
     </html>
   );
