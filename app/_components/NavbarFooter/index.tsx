@@ -22,7 +22,7 @@ function NavbarFooter() {
       {user && (
         <SidebarMenuButton size="lg" className="w-full justify-start gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+            <AvatarImage src={user.image ?? ""} alt="User" />
             <AvatarFallback>{user.name![0]}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start text-left">

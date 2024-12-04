@@ -38,13 +38,16 @@ model Session {
 }
 
 model User {
-  id                  String                   @id @default(cuid())
-  name                String?
-  email               String?                  @unique
-  emailVerified       DateTime?                @map("email_verified")
-  image               String?
-  accounts            Account[]
-  sessions            Session[]
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?  @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  Answer        Answer[]
+  Module        Module[]
+  Category      Category[]
 
   @@map("users")
 }
@@ -56,4 +59,81 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@map("categories")
+}
+
+model Module {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  parentId    String?
+  parent      Module?    @relation("ModuleHierarchy", fields: [parentId], references: [id])
+  submodules  Module[]   @relation("ModuleHierarchy")
+  questions   Question[]
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("modules")
+}
+
+model Question {
+  id            String         @id @default(cuid())
+  text          String
+  type          QuestionType
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  moduleId      String
+  module        Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  options       Option[]
+  correctAnswer CorrectAnswer?
+  answers       Answer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean
+  position   Int?
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+model CorrectAnswer {
+  id         String   @id @default(cuid())
+  questionId String   @unique
+  answer     String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("correct_answers")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  answer     String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  ORDERING
 }

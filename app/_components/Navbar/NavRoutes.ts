@@ -1,4 +1,5 @@
-import { LuCalendar, LuHome, LuInbox, LuSearch, LuSettings } from "react-icons/lu";
+import { LuCalendar, LuHome, LuSearch, LuSettings } from "react-icons/lu";
+import { BsViewList } from "react-icons/bs";
 
 export const links = [
   {
@@ -7,9 +8,9 @@ export const links = [
     icon: LuHome,
   },
   {
-    title: "Inbox",
-    url: "/qwfqwg",
-    icon: LuInbox,
+    title: "Categorias",
+    url: "/categories",
+    icon: BsViewList,
   },
   {
     title: "Calendar",
