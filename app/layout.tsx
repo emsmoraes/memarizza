@@ -34,7 +34,7 @@ export default function RootLayout({
                   <SidebarTrigger />
                 </div>
 
-                <div className="w-full px-4 sm:w-auto sm:px-6 sm:py-6">
+                <div className="w-full px-4 sm:w-full sm:px-6 sm:py-6">
                   {children}
                 </div>
               </main>

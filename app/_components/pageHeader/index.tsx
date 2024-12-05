@@ -10,7 +10,7 @@ const PageHeader = () => {
 
   return (
     currentRoute && (
-      <div className="flex w-full flex-wrap items-center justify-start gap-2 laptop:gap-0">
+      <div className="flex w-full flex-wrap items-center justify-start gap-2 laptop:gap-0 mb-5">
         <h1 className="text-2xl font-semibold">
           {currentRoute.title}
         </h1>

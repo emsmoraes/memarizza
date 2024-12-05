@@ -1,30 +1,21 @@
-import { LuCalendar, LuHome, LuSearch, LuSettings } from "react-icons/lu";
-import { BsViewList } from "react-icons/bs";
+import { LuHome } from "react-icons/lu";
+import { PiTreeViewFill } from "react-icons/pi";
+import { IoSchoolOutline } from "react-icons/io5";
 
 export const links = [
   {
-    title: "Home",
+    title: "Principal",
     url: "/",
     icon: LuHome,
   },
   {
-    title: "Categorias",
-    url: "/categories",
-    icon: BsViewList,
+    title: "Disciplinas",
+    url: "/subjects",
+    icon: IoSchoolOutline ,
   },
   {
-    title: "Calendar",
-    url: "/?hgbds",
-    icon: LuCalendar,
-  },
-  {
-    title: "Search",
-    url: "/fbd",
-    icon: LuSearch,
-  },
-  {
-    title: "Settings",
-    url: "/iubn",
-    icon: LuSettings,
+    title: "Roteiros",
+    url: "/modules",
+    icon: PiTreeViewFill,
   },
 ];
