@@ -49,12 +49,16 @@ function AddSubjectDialog() {
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       try {
-        addSubject(formData.subjectName, (data.user as any).id);
+        await addSubject(formData.subjectName, (data.user as any).id);
         toast("Disciplina adicionada com sucesso!");
         setIsOpenDialog(false);
         form.reset();
-      } catch {
-        toast("Erro ao adicionar. Tente novamente mais tarde");
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Erro ao adicionar. Tente novamente mais tarde.";
+        toast(errorMessage);
       }
     }
   };
