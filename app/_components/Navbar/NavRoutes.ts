@@ -14,7 +14,7 @@ export const links = [
     icon: IoSchoolOutline ,
   },
   {
-    title: "Roteiros",
+    title: "Modulos",
     url: "/modules",
     icon: PiTreeViewFill,
   },

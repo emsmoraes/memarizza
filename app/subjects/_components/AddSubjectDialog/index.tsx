@@ -27,6 +27,7 @@ import { useSession } from "next-auth/react";
 import { addSubject } from "../../_actions/addSubject";
 import { FiPlusCircle } from "react-icons/fi";
 import { toast } from "sonner";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const formSchema = z.object({
   subjectName: z
@@ -38,6 +39,7 @@ const formSchema = z.object({
 function AddSubjectDialog() {
   const { data } = useSession();
   const [isOpenDialog, setIsOpenDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,6 +51,7 @@ function AddSubjectDialog() {
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       try {
+        setIsLoading(true);
         await addSubject(formData.subjectName, (data.user as any).id);
         toast("Disciplina adicionada com sucesso!");
         setIsOpenDialog(false);
@@ -59,6 +62,9 @@ function AddSubjectDialog() {
             ? error.message
             : "Erro ao adicionar. Tente novamente mais tarde.";
         toast(errorMessage);
+        console.log(error)
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -101,7 +107,17 @@ function AddSubjectDialog() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Adicionar</Button>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full sm:w-[90px]"
+              >
+                {isLoading ? (
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                ) : (
+                  "Adicionar"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

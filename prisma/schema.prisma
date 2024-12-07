@@ -95,7 +95,6 @@ model Question {
   moduleId      String
   module        Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   options       Option[]
-  correctAnswer CorrectAnswer?
   answers       Answer[]
 
   @@map("questions")
@@ -106,19 +105,9 @@ model Option {
   questionId String
   text       String
   isCorrect  Boolean
-  position   Int?
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
-}
-
-model CorrectAnswer {
-  id         String   @id @default(cuid())
-  questionId String   @unique
-  answer     String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  @@map("correct_answers")
 }
 
 model Answer {

@@ -1,18 +1,18 @@
 import React, { Suspense } from "react";
+import { Dialog } from "../_components/ui/dialog";
 import PageHeader from "../_components/PageHeader";
 import EmptyData from "../_components/EmptyData";
-import { Dialog } from "../_components/ui/dialog";
-import AddSubjectDialog from "./_components/AddSubjectDialog";
-import { db } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import AddModuleDialog from "./_components/AddModuleDialog";
 import { getServerSession } from "next-auth";
-import SubjectCard from "./_components/SubjectCard";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/prisma";
+import ModuleCard from "./_components/ModuleCard";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-async function Page() {
+async function page() {
   const session = await getServerSession(authOptions);
 
-  const userSubjects = await db.subject.findMany({
+  const userModules = await db.module.findMany({
     where: {
       userId: session?.user?.id,
     },
@@ -21,7 +21,7 @@ async function Page() {
   return (
     <Dialog>
       <PageHeader />
-      <AddSubjectDialog />
+      <AddModuleDialog />
       <Suspense
         fallback={
           <div className="w-full items-center justify-center">
@@ -30,15 +30,15 @@ async function Page() {
         }
       >
         <div className="mt-6 grid w-full cursor-pointer grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {userSubjects.map((subject) => (
-            <SubjectCard subject={subject} key={subject.id} />
+          {userModules.map((subject) => (
+            <ModuleCard module={subject} key={subject.id} />
           ))}
         </div>
       </Suspense>
 
-      {!userSubjects || (userSubjects.length === 0 && <EmptyData />)}
+      {!userModules || (userModules.length === 0 && <EmptyData />)}
     </Dialog>
   );
 }
 
-export default Page;
+export default page;

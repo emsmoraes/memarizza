@@ -84,18 +84,8 @@ CREATE TABLE "options" (
     "questionId" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "isCorrect" BOOLEAN NOT NULL,
-    "position" INTEGER,
 
     CONSTRAINT "options_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "correct_answers" (
-    "id" TEXT NOT NULL,
-    "questionId" TEXT NOT NULL,
-    "answer" TEXT NOT NULL,
-
-    CONSTRAINT "correct_answers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -120,9 +110,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationtokens"("identifier", "token");
 
--- CreateIndex
-CREATE UNIQUE INDEX "correct_answers_questionId_key" ON "correct_answers"("questionId");
-
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -146,9 +133,6 @@ ALTER TABLE "questions" ADD CONSTRAINT "questions_moduleId_fkey" FOREIGN KEY ("m
 
 -- AddForeignKey
 ALTER TABLE "options" ADD CONSTRAINT "options_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "correct_answers" ADD CONSTRAINT "correct_answers_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "answers" ADD CONSTRAINT "answers_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
