@@ -11,10 +11,10 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 async function page() {
   const session = await getServerSession(authOptions);
-
   const userModules = await db.module.findMany({
     where: {
       userId: session?.user?.id,
+      parentId: null,
     },
   });
 

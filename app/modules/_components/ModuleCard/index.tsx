@@ -16,7 +16,7 @@ import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { removeModule } from "../../_actions/removeModule";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface ModuleCardProps {
   module: {
@@ -31,9 +31,10 @@ interface ModuleCardProps {
 function ModuleCard({ module }: ModuleCardProps) {
   const [deletingSubject, setDeletingSubject] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleNavigate = () => {
-    router.push(`/modules/${module.id}`);
+    router.push(`${pathname}/${module.id}`);
   };
 
   const handleDeleteSubject = async () => {
