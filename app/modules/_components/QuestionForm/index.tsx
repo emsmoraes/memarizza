@@ -40,6 +40,8 @@ import {
   DroppableProvided,
 } from "@hello-pangea/dnd";
 import { QuestionType } from "@/app/_models/question.model";
+import { toast } from "sonner";
+import { addQuestion } from "@/app/_services/https/question-service/questionService";
 
 const formSchema = z.object({
   questionTitle: z
@@ -55,34 +57,52 @@ const formSchema = z.object({
       "O título precisa de no mínimo 5 caracteres",
     ),
   questionType: z.string().min(3, "Selecione uma opção"),
-  options: z.array(
-    z.object({
-      id: z.string().min(1, "O id da opção é obrigatório"),
-      text: z
-        .string()
-        .transform((value) => {
-          return value.replace(/<(?!img)[^>]+>/g, "").trim();
-        })
-        .refine((value) => {
-          return value.length >= 5;
-        }, "O texto precisa de mais de 5 caracteres"),
-      isCorrect: z.boolean(),
+  questionSubject: z.string().min(1, "Selecione uma opção"),
+  options: z
+    .array(
+      z.object({
+        id: z.string().min(1, "O id da opção é obrigatório"),
+        text: z
+          .string()
+          .transform((value) => {
+            return value.replace(/<(?!img)[^>]+>/g, "").trim();
+          })
+          .refine((value) => {
+            return value.length >= 5;
+          }, "O texto precisa de mais de 5 caracteres"),
+        isCorrect: z.boolean(),
+      }),
+    )
+    .min(2, "O número mínimo de opções é 2")
+    .refine((options) => options.some((option) => option.isCorrect), {
+      message: "Pelo menos uma opção precisa ser marcada como correta",
     }),
-  ),
 });
 
 interface QuestionFormProps {
+  moduleId: string
   data: Session | null;
   setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  userSubjects: {
+    id: string;
+    name: string;
+    userId: string;
+  }[];
 }
 
-function QuestionForm({ data, setIsOpenDialog }: QuestionFormProps) {
+function QuestionForm({
+  data,
+  setIsOpenDialog,
+  userSubjects,
+  moduleId
+}: QuestionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       questionTitle: "",
+      questionSubject: "",
       questionType: "SINGLE_CHOICE",
     },
   });
@@ -124,7 +144,46 @@ function QuestionForm({ data, setIsOpenDialog }: QuestionFormProps) {
 
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
-      console.log(formData);
+
+      const options = formData.options.map((option: any) => ({
+        text: option.text,
+        isCorrect: option.isCorrect,
+      }));
+    
+      try {
+        setIsLoading(true);
+        await addQuestion({
+          module: {
+            connect: {
+              id: moduleId,
+            },
+          },
+          subject: {
+            connect: {
+              id: formData.questionSubject,
+            },
+          },
+          type: formData.questionType as QuestionType,
+          text: formData.questionTitle,
+          options: {
+            create: options,
+          }
+        });
+        setIsOpenDialog((old) => {
+          console.log(!old);
+          return !old;
+        });
+        toast("Questão adicionada com sucesso!");
+        form.reset();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Erro ao adicionar. Tente novamente mais tarde.";
+        toast(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -146,6 +205,30 @@ function QuestionForm({ data, setIsOpenDialog }: QuestionFormProps) {
               <FormLabel>Título da questão</FormLabel>
               <FormControl>
                 <RichText content={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="questionSubject"
+          render={({ field }) => (
+            <FormItem className="mb-4 w-full">
+              <FormControl>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o assunto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {userSubjects?.map((subject) => (
+                      <SelectItem key={subject.id} value={subject.id}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -189,6 +272,11 @@ function QuestionForm({ data, setIsOpenDialog }: QuestionFormProps) {
             <Button onClick={addOption} type="button" className="ml-4">
               <FiPlusCircle />
             </Button>
+            {form.formState.errors.options && (
+              <p className="text-[0.8rem] font-medium text-destructive">
+                {form.formState.errors.options.message}
+              </p>
+            )}
           </div>
 
           <DragDropContext onDragEnd={onDragEnd}>

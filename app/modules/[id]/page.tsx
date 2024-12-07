@@ -31,10 +31,16 @@ async function Module({ params }: ModuleProps) {
     },
   });
 
+  const userSubjects = await db.subject.findMany({
+    where: {
+      userId: session?.user?.id,
+    },
+  });
+
   return (
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
-      <AddModuleOrQuestionDialog moduleId={params.id} />
+      <AddModuleOrQuestionDialog moduleId={params.id} userSubjects={userSubjects}/>
 
       <Suspense
         fallback={

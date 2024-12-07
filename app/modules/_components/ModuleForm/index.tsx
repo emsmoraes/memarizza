@@ -16,13 +16,13 @@ import { Input } from "@/app/_components/ui/input";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { toast } from "sonner";
 import { Textarea } from "@/app/_components/ui/textarea";
-import { addModule } from "../../_actions/addModule";
 import { Session } from "next-auth";
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/app/_components/ui/dialog";
+import { addModule } from "@/app/_services/https/module-service/moduleService";
 
 const formSchema = z.object({
   moduleName: z
@@ -57,7 +57,7 @@ function ModuleForm({ data, setIsOpenDialog, moduleId }: ModuleFormProps) {
           formData.moduleName,
           formData.moduleDescription,
           data.user.id,
-          moduleId
+          moduleId,
         );
         setIsOpenDialog((old) => {
           console.log(!old);

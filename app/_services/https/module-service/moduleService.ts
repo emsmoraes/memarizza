@@ -1,3 +1,4 @@
+
 "use server";
 
 import { db } from "@/lib/prisma";
@@ -37,5 +38,18 @@ export const addModule = async (
     } catch (error) {
         console.error("Error adding subject:", error);
         throw new Error(error instanceof Error ? error.message : "An unexpected error occurred.");
+    }
+};
+
+export const removeModule = async (moduleId: string) => {
+    try {
+        await db.module.delete({
+            where: {
+                id: moduleId
+            }
+        })
+        revalidatePath("/modules")
+    } catch (error) {
+        console.log(error)
     }
 };

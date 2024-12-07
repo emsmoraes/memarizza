@@ -15,8 +15,8 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { removeModule } from "../../_actions/removeModule";
 import { usePathname, useRouter } from "next/navigation";
+import { removeModule } from "@/app/_services/https/module-service/moduleService";
 
 interface ModuleCardProps {
   module: {
