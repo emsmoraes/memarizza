@@ -21,6 +21,7 @@ import { removeQuestion } from "@/app/_services/https/question-service/questionS
 import { Prisma } from "@prisma/client";
 import UpdateQuestionForm from "../UpdateQuestionForm";
 import { useSession } from "next-auth/react";
+import { Tabs, TabsContent } from "@/app/_components/ui/tabs";
 
 interface QuestionCardCardProps {
   question: Prisma.QuestionGetPayload<{
@@ -148,13 +149,17 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
         <DialogContent
           className={`max-h-[80vh] overflow-x-auto pt-10 sm:max-w-[600px]`}
         >
-          <UpdateQuestionForm
-            data={data}
-            initialData={formatQuestionForForm(question)}
-            questionId={question.id}
-            setIsOpenDialog={setShowDetailsDialog}
-            userSubjects={userSubjects}
-          />
+          <Tabs defaultValue="question">
+            <TabsContent value="question">
+              <UpdateQuestionForm
+                data={data}
+                initialData={formatQuestionForForm(question)}
+                questionId={question.id}
+                setIsOpenDialog={setShowDetailsDialog}
+                userSubjects={userSubjects}
+              />
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </>

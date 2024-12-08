@@ -42,7 +42,7 @@ function ModuleCard({ module }: ModuleCardProps) {
 
     try {
       await removeModule(module.id);
-      toast("Disciplina excluída com sucesso");
+      toast("Modulo excluído com sucesso");
     } catch (error) {
       console.log(error);
       toast("Erro ao excluír disciplina");

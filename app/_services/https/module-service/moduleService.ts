@@ -43,13 +43,30 @@ export const addModule = async (
 
 export const removeModule = async (moduleId: string) => {
     try {
+        await db.question.deleteMany({
+            where: {
+                moduleId: moduleId,
+            },
+        });
+
+        const submodules = await db.module.findMany({
+            where: {
+                parentId: moduleId,
+            },
+        });
+
+        for (const submodule of submodules) {
+            await removeModule(submodule.id);
+        }
+
         await db.module.delete({
             where: {
-                id: moduleId
-            }
-        })
-        revalidatePath("/modules")
+                id: moduleId,
+            },
+        });
+
+        revalidatePath("/modules");
     } catch (error) {
-        console.log(error)
+        console.log("Erro ao excluir o módulo:", error);
     }
 };
