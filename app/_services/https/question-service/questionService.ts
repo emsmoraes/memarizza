@@ -13,3 +13,38 @@ export const addQuestion = async (
     });
     revalidatePath("/modules")
 }
+
+export const removeQuestion = async (questionId: string) => {
+    try {
+        await db.question.delete({
+            where: {
+                id: questionId
+            }
+        })
+        revalidatePath("/modules")
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+export const updateQuestion = async (
+    questionId: string,
+    data: Prisma.QuestionUpdateInput
+) => {
+    await db.$transaction(async (prisma) => {
+        await prisma.option.deleteMany({
+            where: { questionId },
+        });
+
+        await prisma.answer.deleteMany({
+            where: { questionId },
+        });
+
+        await prisma.question.update({
+            where: { id: questionId },
+            data,
+        });
+    });
+
+    revalidatePath("/modules");
+};

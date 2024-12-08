@@ -8,6 +8,7 @@ import EmptyData from "@/app/_components/EmptyData";
 import ModulePageHeader from "../../_components/ModulePageHeader";
 import AddModuleOrQuestionDialog from "../../_components/AddModuleOrQuestionDialog";
 import ModuleCard from "../../_components/ModuleCard";
+import QuestionCard from "../../_components/QuestionCard";
 
 interface ModuleProps {
   params: {
@@ -38,6 +39,16 @@ async function Module({ params }: ModuleProps) {
     },
   });
 
+  const childrenQuestions = await db.question.findMany({
+    where: {
+      moduleId: currentSubmoduleId,
+    },
+    include: {
+      options: true,
+      subject: true,
+    },
+  });
+
   return (
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
@@ -54,13 +65,20 @@ async function Module({ params }: ModuleProps) {
         }
       >
         <div className="mt-6 grid w-full cursor-pointer grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {childrenModules.map((subject) => (
-            <ModuleCard module={subject} key={subject.id} />
+          {childrenModules.map((module) => (
+            <ModuleCard module={module} key={module.id} />
+          ))}
+          {childrenQuestions.map((question) => (
+            <QuestionCard
+              question={question}
+              key={question.id}
+              userSubjects={userSubjects}
+            />
           ))}
         </div>
       </Suspense>
 
-      {!childrenModules || (childrenModules.length === 0 && <EmptyData />)}
+      {!childrenQuestions && !childrenModules && <EmptyData />}
     </Dialog>
   );
 }

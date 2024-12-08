@@ -121,7 +121,9 @@ function FormOptionCard({
               <div className="mr-2 flex w-full items-center justify-between">
                 {option.text && (
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold">{ALPHABET[index]})</h3>
+                    <h3 className="text-lg font-semibold">
+                      {ALPHABET[index]})
+                    </h3>
                     <div
                       className="block flex-1"
                       dangerouslySetInnerHTML={{ __html: option.text }}
@@ -131,21 +133,20 @@ function FormOptionCard({
                 {error?.text?.message && (
                   <p className="block w-full">{error?.text?.message}</p>
                 )}
-                <Button
+                <span
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     toggleCorrect();
                   }}
-                  variant="ghost"
-                  size="icon"
-                  className="ml-2"
+                  className="ml-2 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-primary/10"
                 >
                   {option.isCorrect ? (
                     <Check className="h-4 w-4 min-w-4 text-green-500" />
                   ) : (
                     <X className="h-4 w-4 min-w-4 text-red-500" />
                   )}
-                </Button>
+                </span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="rounded-b-lg bg-zinc-100/10 px-4 py-4 data-[state=closed]:hidden">

@@ -42,11 +42,10 @@ import {
 } from "@hello-pangea/dnd";
 import { QuestionType } from "@/app/_models/question.model";
 import { toast } from "sonner";
-import { addQuestion } from "@/app/_services/https/question-service/questionService";
+import { updateQuestion } from "@/app/_services/https/question-service/questionService";
 import { formSchema } from "./schema";
 
-interface QuestionFormProps {
-  moduleId: string;
+interface UpdateQuestionFormProps {
   data: Session | null;
   setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
   userSubjects: {
@@ -54,23 +53,22 @@ interface QuestionFormProps {
     name: string;
     userId: string;
   }[];
+  initialData: any;
+  questionId: string;
 }
 
-function QuestionForm({
+function UpdateQuestionForm({
   data,
   setIsOpenDialog,
   userSubjects,
-  moduleId,
-}: QuestionFormProps) {
+  questionId,
+  initialData,
+}: UpdateQuestionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      questionTitle: "",
-      questionSubject: "",
-      questionType: "SINGLE_CHOICE",
-    },
+    defaultValues: initialData,
   });
 
   const addOption = () => {
@@ -115,35 +113,33 @@ function QuestionForm({
         isCorrect: option.isCorrect,
       }));
 
+      const payload = {
+        subject: {
+          connect: {
+            id: formData.questionSubject,
+          },
+        },
+        type: formData.questionType as QuestionType,
+        text: formData.questionTitle,
+        options: {
+          create: options,
+        },
+      };
+
       try {
         setIsLoading(true);
-        await addQuestion({
-          module: {
-            connect: {
-              id: moduleId,
-            },
-          },
-          subject: {
-            connect: {
-              id: formData.questionSubject,
-            },
-          },
-          type: formData.questionType as QuestionType,
-          text: formData.questionTitle,
-          options: {
-            create: options,
-          },
-        });
+        await updateQuestion(questionId, payload);
         setIsOpenDialog((old) => {
+          console.log(!old);
           return !old;
         });
-        toast("Questão adicionada com sucesso!");
+        toast("Questão editada com sucesso!");
         form.reset();
       } catch (error) {
         const errorMessage =
           error instanceof Error
             ? error.message
-            : "Erro ao adicionar. Tente novamente mais tarde.";
+            : "Erro ao editar. Tente novamente mais tarde.";
         toast(errorMessage);
       } finally {
         setIsLoading(false);
@@ -154,10 +150,8 @@ function QuestionForm({
   return (
     <Form {...form}>
       <DialogHeader className="mb-3 mt-3">
-        <DialogTitle>Adicionar questão</DialogTitle>
-        <DialogDescription>
-          Adicione uma questão para começar os estudos.
-        </DialogDescription>
+        <DialogTitle>Editar questão</DialogTitle>
+        <DialogDescription />
       </DialogHeader>
 
       <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -280,7 +274,7 @@ function QuestionForm({
             {isLoading ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
-              "Adicionar"
+              "Salvar"
             )}
           </Button>
         </div>
@@ -289,4 +283,4 @@ function QuestionForm({
   );
 }
 
-export default QuestionForm;
+export default UpdateQuestionForm;
