@@ -30,7 +30,7 @@ async function Module({ params }: ModuleProps) {
       userId: session?.user?.id,
       parentId: params.id,
     },
-  });
+  }) ?? [];
 
   const childrenQuestions = await db.question.findMany({
     where: {
@@ -40,7 +40,7 @@ async function Module({ params }: ModuleProps) {
       options: true,
       subject: true,
     },
-  });
+  }) ?? [];
 
   const userSubjects = await db.subject.findMany({
     where: {
@@ -77,7 +77,7 @@ async function Module({ params }: ModuleProps) {
         </div>
       </Suspense>
 
-      {!childrenQuestions && !childrenModules && <EmptyData />}
+      {childrenQuestions.length === 0 && childrenModules.length === 0 && <EmptyData />}
     </Dialog>
   );
 }

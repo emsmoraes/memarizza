@@ -78,7 +78,9 @@ async function Module({ params }: ModuleProps) {
         </div>
       </Suspense>
 
-      {!childrenQuestions && !childrenModules && <EmptyData />}
+      {childrenQuestions.length === 0 && childrenModules.length === 0 && (
+        <EmptyData />
+      )}
     </Dialog>
   );
 }
