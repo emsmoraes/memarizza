@@ -63,6 +63,8 @@ CREATE TABLE "modules" (
     "description" TEXT,
     "userId" TEXT NOT NULL,
     "parentId" TEXT,
+    "public" BOOLEAN DEFAULT true,
+    "clones" INTEGER DEFAULT 0,
 
     CONSTRAINT "modules_pkey" PRIMARY KEY ("id")
 );
@@ -94,8 +96,39 @@ CREATE TABLE "answers" (
     "userId" TEXT NOT NULL,
     "questionId" TEXT NOT NULL,
     "answer" TEXT NOT NULL,
+    "isCorrect" BOOLEAN NOT NULL,
 
     CONSTRAINT "answers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "module_sessions" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "moduleIds" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "progress" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "completed" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "module_sessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "module_session_questions" (
+    "id" TEXT NOT NULL,
+    "moduleSessionId" TEXT NOT NULL,
+    "questionId" TEXT NOT NULL,
+    "answered" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "module_session_questions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_ModuleSessionModules" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_ModuleSessionModules_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -109,6 +142,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationtokens"("identifier", "token");
+
+-- CreateIndex
+CREATE INDEX "_ModuleSessionModules_B_index" ON "_ModuleSessionModules"("B");
 
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -139,3 +175,18 @@ ALTER TABLE "answers" ADD CONSTRAINT "answers_questionId_fkey" FOREIGN KEY ("que
 
 -- AddForeignKey
 ALTER TABLE "answers" ADD CONSTRAINT "answers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "module_sessions" ADD CONSTRAINT "module_sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "module_session_questions" ADD CONSTRAINT "module_session_questions_moduleSessionId_fkey" FOREIGN KEY ("moduleSessionId") REFERENCES "module_sessions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "module_session_questions" ADD CONSTRAINT "module_session_questions_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ModuleSessionModules" ADD CONSTRAINT "_ModuleSessionModules_A_fkey" FOREIGN KEY ("A") REFERENCES "modules"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ModuleSessionModules" ADD CONSTRAINT "_ModuleSessionModules_B_fkey" FOREIGN KEY ("B") REFERENCES "module_sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

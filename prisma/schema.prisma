@@ -38,16 +38,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  email         String?         @unique
+  emailVerified DateTime?       @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
   Answer        Answer[]
   Module        Module[]
   subject       Subject[]
+  ModuleSession ModuleSession[]
 
   @@map("users")
 }
@@ -77,25 +78,29 @@ model Module {
   description String?
   userId      String
   parentId    String?
+  public      Boolean?   @default(true)
+  clones      Int?       @default(0)
   parent      Module?    @relation("ModuleHierarchy", fields: [parentId], references: [id])
   submodules  Module[]   @relation("ModuleHierarchy")
   questions   Question[]
 
-  user User @relation(fields: [userId], references: [id])
+  user           User            @relation(fields: [userId], references: [id])
+  moduleSessions ModuleSession[] @relation("ModuleSessionModules")
 
   @@map("modules")
 }
 
 model Question {
-  id            String         @id @default(cuid())
-  text          String
-  type          QuestionType
-  subjectId     String
-  subject       Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  moduleId      String
-  module        Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  options       Option[]
-  answers       Answer[]
+  id                    String                  @id @default(cuid())
+  text                  String
+  type                  QuestionType
+  subjectId             String
+  subject               Subject                 @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  moduleId              String
+  module                Module                  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  options               Option[]
+  answers               Answer[]
+  moduleSessionQuestion ModuleSessionQuestion[]
 
   @@map("questions")
 }
@@ -115,10 +120,38 @@ model Answer {
   userId     String
   questionId String
   answer     String
+  isCorrect  Boolean
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("answers")
+}
+
+model ModuleSession {
+  id        String   @id @default(cuid())
+  userId    String
+  moduleIds String[]
+  createdAt DateTime @default(now())
+  progress  Float    @default(0)
+  completed Boolean  @default(false)
+
+  user                  User                    @relation(fields: [userId], references: [id])
+  modules               Module[]                @relation("ModuleSessionModules")
+  moduleSessionQuestion ModuleSessionQuestion[]
+
+  @@map("module_sessions")
+}
+
+model ModuleSessionQuestion {
+  id              String  @id @default(cuid())
+  moduleSessionId String
+  questionId      String
+  answered        Boolean @default(false)
+
+  moduleSession ModuleSession @relation(fields: [moduleSessionId], references: [id])
+  question      Question      @relation(fields: [questionId], references: [id])
+
+  @@map("module_session_questions")
 }
 
 enum QuestionType {
