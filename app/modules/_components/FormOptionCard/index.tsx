@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -93,6 +93,28 @@ function FormOptionCard({
     setValue("options", updatedOptions);
   };
 
+  const OptionComponent = ({
+    option,
+    index,
+  }: {
+    option: { text: string };
+    index: number;
+  }) => {
+    const renderedOption = useMemo(() => {
+      return (
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold">{ALPHABET[index]})</h3>
+          <div
+            className="block flex-1"
+            dangerouslySetInnerHTML={{ __html: option.text }}
+          />
+        </div>
+      );
+    }, [option.text, index]);
+
+    return renderedOption;
+  };
+
   return (
     <Draggable key={option.id} draggableId={option.id} index={index}>
       {(provided: DraggableProvided) => (
@@ -120,15 +142,7 @@ function FormOptionCard({
               </div>
               <div className="mr-2 flex w-full items-center justify-between">
                 {option.text && (
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold">
-                      {ALPHABET[index]})
-                    </h3>
-                    <div
-                      className="block flex-1"
-                      dangerouslySetInnerHTML={{ __html: option.text }}
-                    />
-                  </div>
+                  <OptionComponent option={option} index={index} />
                 )}
                 {error?.text?.message && (
                   <p className="block w-full">{error?.text?.message}</p>

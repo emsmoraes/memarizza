@@ -80,6 +80,14 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
     }
   };
 
+  function removeHtmlAndImages(input: string): string {
+    let result = input.replace(/<img[^>]*>/g, '');
+    
+    result = result.replace(/<\/?[^>]+(>|$)/g, '');
+  
+    return result;
+  }
+
   return (
     <>
       <Dialog>
@@ -91,11 +99,13 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
           <div className="text-center">
             <BsFileEarmarkText className="text-2xl" />
           </div>
-          <div className="mt-2">
-            <p className="w-full truncate text-center text-base font-semibold">
-              {question.text}
+          <div className="mt-2 line-clamp-2 w-full">
+            <p className="w-full break-words text-center text-base font-semibold line-clamp-2">
+              {removeHtmlAndImages(question.text)}
             </p>
-            <p className="line-clamp-2 w-full text-center text-sm">any HEre</p>
+            <p className="w-full break-words text-center text-xs">
+              {question.subject.name}
+            </p>
           </div>
 
           <DialogTrigger
@@ -118,7 +128,7 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Tem certeza que deseja excluir a questão &quot;{question.text}
+              Tem certeza que deseja excluir a questão &quot;{removeHtmlAndImages(question.text)}
               &quot;?
             </DialogTitle>
             <DialogDescription>Essa ação é irreversível</DialogDescription>
@@ -147,7 +157,7 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
 
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent
-          className={`max-h-[80vh] overflow-x-auto pt-10 sm:max-w-[600px]`}
+          className={`max-h-[80vh] overflow-x-auto pt-10 sm:max-w-[600px] translate-x-[-50%] translate-y-[-50%] m-auto`}
         >
           <Tabs defaultValue="question">
             <TabsContent value="question">

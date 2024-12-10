@@ -32,6 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import Placeholder from "@tiptap/extension-placeholder";
 
 const setLink = (editor: any) => {
   const url = prompt("Digite o URL do link:");
@@ -54,7 +55,16 @@ interface RichTextProps {
 
 const RichText: React.FC<RichTextProps> = ({ content, onChange }) => {
   const editor = useEditor({
-    extensions: [StarterKit, TextStyle, Image, LinkExtension, Underline],
+    extensions: [
+      StarterKit,
+      TextStyle,
+      Image,
+      LinkExtension,
+      Underline,
+      Placeholder.configure({
+        placeholder: "Digite o enunciado da questão…",
+      }),
+    ],
     editorProps: {
       attributes: {
         class:
@@ -228,6 +238,13 @@ const RichText: React.FC<RichTextProps> = ({ content, onChange }) => {
             }
             .ProseMirror ol li {
               margin-bottom: 0.25rem;
+            }
+            .tiptap p.is-editor-empty:first-child::before {
+              color: #adb5bd;
+              content: attr(data-placeholder);
+              float: left;
+              height: 0;
+              pointer-events: none;
             }
           `}
         </style>
