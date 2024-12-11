@@ -16,9 +16,9 @@ import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { usePathname, useRouter } from "next/navigation";
-import { removeModule } from "@/app/_services/https/module-service/moduleService";
+import { deleteModuleSession } from "@/app/_services/https/module-session-service/moduleSessionService";
 
-interface ModuleCardProps {
+interface ModuleSessionCardProps {
   module: {
     id: string;
     name: string;
@@ -28,7 +28,7 @@ interface ModuleCardProps {
   };
 }
 
-function ModuleCard({ module }: ModuleCardProps) {
+function ModuleSessionCard({ module }: ModuleSessionCardProps) {
   const [deletingSubject, setDeletingSubject] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -37,15 +37,15 @@ function ModuleCard({ module }: ModuleCardProps) {
     router.push(`${pathname}/${module.id}`);
   };
 
-  const handleDeleteModule = async () => {
+  const handleDeleteModuleSession = async () => {
     setDeletingSubject(true);
 
     try {
-      await removeModule(module.id);
-      toast("Modulo excluído com sucesso");
+      await deleteModuleSession(module.id);
+      toast("Sessão de estudo excluída com sucesso");
     } catch (error) {
       console.log(error);
-      toast("Erro ao excluír disciplina");
+      toast("Erro ao excluír sessão de estudo");
     } finally {
       setDeletingSubject(true);
     }
@@ -106,7 +106,7 @@ function ModuleCard({ module }: ModuleCardProps) {
             </Button>
           </DialogClose>
           <Button
-            onClick={handleDeleteModule}
+            onClick={handleDeleteModuleSession}
             type="button"
             variant="destructive"
             className="mb-2 mt-2 w-full sm:mb-0 sm:mt-0 sm:w-[95px]"
@@ -123,4 +123,4 @@ function ModuleCard({ module }: ModuleCardProps) {
   );
 }
 
-export default ModuleCard;
+export default ModuleSessionCard;

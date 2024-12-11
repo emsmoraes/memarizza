@@ -1,6 +1,7 @@
 import { LuHome } from "react-icons/lu";
-import { PiTreeViewFill } from "react-icons/pi";
+import { PiTreeViewDuotone } from "react-icons/pi";
 import { IoSchoolOutline } from "react-icons/io5";
+import { IoFileTrayFullOutline } from "react-icons/io5";
 
 export const links = [
   {
@@ -11,11 +12,16 @@ export const links = [
   {
     title: "Disciplinas",
     url: "/subjects",
-    icon: IoSchoolOutline ,
+    icon: IoSchoolOutline,
   },
   {
     title: "Modulos",
     url: "/modules",
-    icon: PiTreeViewFill,
+    icon: PiTreeViewDuotone,
+  },
+  {
+    title: "Sessões de estudo",
+    url: "/sessions",
+    icon: IoFileTrayFullOutline,
   },
 ];

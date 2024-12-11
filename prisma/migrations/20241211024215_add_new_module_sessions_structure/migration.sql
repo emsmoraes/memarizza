@@ -102,6 +102,17 @@ CREATE TABLE "answers" (
 );
 
 -- CreateTable
+CREATE TABLE "module_session_modules" (
+    "id" TEXT NOT NULL,
+    "moduleSessionId" TEXT NOT NULL,
+    "moduleId" TEXT NOT NULL,
+    "isParent" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "module_session_modules_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "module_sessions" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -175,6 +186,12 @@ ALTER TABLE "answers" ADD CONSTRAINT "answers_questionId_fkey" FOREIGN KEY ("que
 
 -- AddForeignKey
 ALTER TABLE "answers" ADD CONSTRAINT "answers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "module_session_modules" ADD CONSTRAINT "module_session_modules_moduleSessionId_fkey" FOREIGN KEY ("moduleSessionId") REFERENCES "module_sessions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "module_session_modules" ADD CONSTRAINT "module_session_modules_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "modules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "module_sessions" ADD CONSTRAINT "module_sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

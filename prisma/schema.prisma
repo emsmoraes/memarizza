@@ -84,8 +84,9 @@ model Module {
   submodules  Module[]   @relation("ModuleHierarchy")
   questions   Question[]
 
-  user           User            @relation(fields: [userId], references: [id])
-  moduleSessions ModuleSession[] @relation("ModuleSessionModules")
+  user                 User                  @relation(fields: [userId], references: [id])
+  moduleSessions       ModuleSession[]       @relation("ModuleSessionModules")
+  moduleSessionModules ModuleSessionModule[]
 
   @@map("modules")
 }
@@ -127,16 +128,29 @@ model Answer {
   @@map("answers")
 }
 
+model ModuleSessionModule {
+  id              String   @id @default(cuid())
+  moduleSessionId String
+  moduleId        String
+  isParent        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  moduleSession ModuleSession @relation(fields: [moduleSessionId], references: [id])
+  module        Module        @relation(fields: [moduleId], references: [id])
+
+  @@map("module_session_modules")
+}
+
 model ModuleSession {
   id        String   @id @default(cuid())
   userId    String
-  moduleIds String[]
   createdAt DateTime @default(now())
   progress  Float    @default(0)
   completed Boolean  @default(false)
 
   user                  User                    @relation(fields: [userId], references: [id])
   modules               Module[]                @relation("ModuleSessionModules")
+  moduleSessionModules  ModuleSessionModule[]
   moduleSessionQuestion ModuleSessionQuestion[]
 
   @@map("module_sessions")

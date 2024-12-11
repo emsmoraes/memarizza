@@ -9,6 +9,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import ModuleCard from "../_components/ModuleCard";
 import EmptyData from "@/app/_components/EmptyData";
 import QuestionCard from "../_components/QuestionCard";
+import StartModuleSession from "../_components/StartModuleSession";
 
 interface ModuleProps {
   params: {
@@ -25,22 +26,24 @@ async function Module({ params }: ModuleProps) {
     },
   });
 
-  const childrenModules = await db.module.findMany({
-    where: {
-      userId: session?.user?.id,
-      parentId: params.id,
-    },
-  }) ?? [];
+  const childrenModules =
+    (await db.module.findMany({
+      where: {
+        userId: session?.user?.id,
+        parentId: params.id,
+      },
+    })) ?? [];
 
-  const childrenQuestions = await db.question.findMany({
-    where: {
-      moduleId: params.id,
-    },
-    include: {
-      options: true,
-      subject: true,
-    },
-  }) ?? [];
+  const childrenQuestions =
+    (await db.question.findMany({
+      where: {
+        moduleId: params.id,
+      },
+      include: {
+        options: true,
+        subject: true,
+      },
+    })) ?? [];
 
   const userSubjects = await db.subject.findMany({
     where: {
@@ -51,10 +54,17 @@ async function Module({ params }: ModuleProps) {
   return (
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
-      <AddModuleOrQuestionDialog
-        moduleId={params.id}
-        userSubjects={userSubjects}
-      />
+
+      <div className="flex w-full items-center justify-between">
+        <AddModuleOrQuestionDialog
+          moduleId={params.id}
+          userSubjects={userSubjects}
+        />
+        <StartModuleSession
+          moduleId={moduleData?.id ?? ""}
+          userId={session?.user?.id ?? ""}
+        />
+      </div>
 
       <Suspense
         fallback={
@@ -63,7 +73,7 @@ async function Module({ params }: ModuleProps) {
           </div>
         }
       >
-        <div className="mt-6 grid w-full cursor-pointer grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {childrenModules.map((module) => (
             <ModuleCard module={module} key={module.id} />
           ))}
@@ -77,7 +87,9 @@ async function Module({ params }: ModuleProps) {
         </div>
       </Suspense>
 
-      {childrenQuestions.length === 0 && childrenModules.length === 0 && <EmptyData />}
+      {childrenQuestions.length === 0 && childrenModules.length === 0 && (
+        <EmptyData />
+      )}
     </Dialog>
   );
 }
