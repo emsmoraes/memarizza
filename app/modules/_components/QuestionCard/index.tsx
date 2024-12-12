@@ -53,6 +53,7 @@ function formatQuestionForForm(
       id: option.id,
       text: option.text,
       isCorrect: option.isCorrect,
+      description: option.description,
     })),
   };
 }

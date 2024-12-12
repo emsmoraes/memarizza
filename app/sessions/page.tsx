@@ -26,8 +26,6 @@ async function Sessions() {
     },
   });
 
-  console.log(userModuleSessions);
-
   return (
     <>
       <PageHeader />

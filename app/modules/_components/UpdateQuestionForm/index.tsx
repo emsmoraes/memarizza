@@ -106,11 +106,14 @@ function UpdateQuestionForm({
     return result;
   }
 
+  console.log(initialData)
+
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       const options = formData.options.map((option: any) => ({
         text: option.text,
         isCorrect: option.isCorrect,
+        description: option.description,
       }));
 
       const payload = {
@@ -147,6 +150,7 @@ function UpdateQuestionForm({
     }
   };
 
+  console.log(form.formState.errors)
   return (
     <Form {...form}>
       <DialogHeader className="mb-3 mt-3">

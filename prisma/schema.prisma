@@ -109,7 +109,7 @@ model Option {
   id          String   @id @default(cuid())
   questionId  String
   text        String
-  description String
+  description String?
   isCorrect   Boolean
   question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 

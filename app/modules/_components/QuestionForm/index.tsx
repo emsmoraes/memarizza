@@ -73,6 +73,8 @@ function QuestionForm({
     },
   });
 
+  console.log(data)
+
   const addOption = () => {
     const currentOptions = form.watch("options") ?? [];
 
@@ -108,11 +110,13 @@ function QuestionForm({
     return result;
   }
 
+
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       const options = formData.options.map((option: any) => ({
         text: option.text,
         isCorrect: option.isCorrect,
+        description: option.description,
       }));
 
       try {

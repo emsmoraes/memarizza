@@ -26,6 +26,7 @@ export const formSchema = z.object({
             const valueToValidade = value.replace(/<(?!img)[^>]+>/g, "").trim()
             return valueToValidade.length >= 5;
           }, "O texto precisa de mais de 5 caracteres"),
+        description: z.string().optional().nullable(),
         isCorrect: z.boolean(),
       }),
     )

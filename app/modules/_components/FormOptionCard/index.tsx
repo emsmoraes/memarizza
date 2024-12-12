@@ -20,6 +20,7 @@ import { Draggable, DraggableProvided } from "@hello-pangea/dnd";
 import { RiDraggable } from "react-icons/ri";
 import { QuestionType } from "@/app/_models/question.model";
 import { ALPHABET } from "@/app/_models/alphabet.model";
+import { Textarea } from "@/app/_components/ui/textarea";
 
 interface FormOptionCardProps {
   index: number;
@@ -28,6 +29,7 @@ interface FormOptionCardProps {
     id: string;
     text: string;
     isCorrect: boolean;
+    description?: string | null;
   };
   error:
     | Merge<
@@ -49,6 +51,7 @@ function FormOptionCard({
 }: FormOptionCardProps) {
   const { setValue, getValues } = useFormContext();
   const [newText, setNewText] = useState(option.text);
+  const [descriptionText, setDescriptionText] = useState(option.description);
   const [openAccordion, setOpenAccordion] = useState(false);
 
   const handleTextChange = () => {
@@ -58,7 +61,9 @@ function FormOptionCard({
 
     const options = getValues("options");
     const updatedOptions = options.map((opt: any) =>
-      opt.id === option.id ? { ...opt, text: newText } : opt,
+      opt.id === option.id
+        ? { ...opt, text: newText, description: descriptionText }
+        : opt,
     );
     setValue("options", updatedOptions);
 
@@ -166,6 +171,12 @@ function FormOptionCard({
             <AccordionContent className="rounded-b-lg bg-zinc-100/10 px-4 py-4 data-[state=closed]:hidden">
               <div className="flex flex-col items-end justify-center gap-2">
                 <RichText content={newText} onChange={setNewText} />
+                <Textarea
+                  className="border-b border-l border-r border-gray-700 px-4 py-3 text-gray-400"
+                  placeholder="Descreva o motivo dessa opção estar correta ou errada (opicional)"
+                  onChange={(e) => setDescriptionText(e.target.value)}
+                  value={descriptionText ?? ""}
+                />
                 <div className="mt-2 flex gap-2">
                   <Button
                     onClick={handleDeleteOption}
