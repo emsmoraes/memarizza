@@ -80,7 +80,7 @@ export const deleteModuleSession = async (moduleSessionId: string) => {
             },
         });
 
-        revalidatePath("/module-sessions");
+        revalidatePath("/sessions");
     } catch (error) {
         console.error("Erro ao deletar ModuleSession:", error);
         throw error;

@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { FiBook, FiTrash2 } from "react-icons/fi";
+import React, { useTransition } from "react";
+import { FiTrash2 } from "react-icons/fi";
 import styles from "./styles.module.css";
 import {
   Dialog,
@@ -15,41 +15,46 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { deleteModuleSession } from "@/app/_services/https/module-session-service/moduleSessionService";
+import { Prisma } from "@prisma/client";
+import { IoPlayCircleSharp } from "react-icons/io5";
+import moment from "moment";
 
 interface ModuleSessionCardProps {
-  module: {
-    id: string;
-    name: string;
-    description: string | null;
-    userId: string;
-    parentId: string | null;
-  };
+  session: Prisma.ModuleSessionGetPayload<{
+    include: {
+      moduleSessionModules: {
+        include: {
+          module: true;
+        };
+      };
+    };
+  }>;
 }
 
-function ModuleSessionCard({ module }: ModuleSessionCardProps) {
-  const [deletingSubject, setDeletingSubject] = useState(false);
+function ModuleSessionCard({ session }: ModuleSessionCardProps) {
   const router = useRouter();
-  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   const handleNavigate = () => {
-    router.push(`${pathname}/${module.id}`);
+    router.push(`sessions/${session.id}`);
   };
 
-  const handleDeleteModuleSession = async () => {
-    setDeletingSubject(true);
-
-    try {
-      await deleteModuleSession(module.id);
-      toast("Sessão de estudo excluída com sucesso");
-    } catch (error) {
-      console.log(error);
-      toast("Erro ao excluír sessão de estudo");
-    } finally {
-      setDeletingSubject(true);
-    }
+  const handleDeleteModuleSession = () => {
+    startTransition(async () => {
+      try {
+        await deleteModuleSession(session.id);
+        toast("Sessão de estudo excluída com sucesso");
+      } catch (error) {
+        console.log(error);
+        toast("Erro ao excluír sessão de estudo");
+      }
+    });
   };
+
+  const parentModule = session.moduleSessionModules[0].module;
+  const modulesCount = session.moduleSessionModules.length - 1;
 
   return (
     <Dialog>
@@ -59,14 +64,17 @@ function ModuleSessionCard({ module }: ModuleSessionCardProps) {
           className={`${styles.glassEffect} group relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
         >
           <div className="text-center">
-            <FiBook className="text-2xl" />
+            <IoPlayCircleSharp className="text-5xl transition-transform duration-200 hover:scale-110" />
           </div>
           <div className="mt-2">
             <p className="w-full truncate text-center text-base font-semibold">
-              {module.name}
+              {parentModule.name} {modulesCount > 0 && `+${modulesCount}`}
             </p>
-            <p className="line-clamp-2 w-full text-center text-sm">
-              {module.description}
+            <p className="mt-2 line-clamp-2 w-full text-center text-xs">
+              Criado em {moment(session.createdAt).format("DD/MM/YYYY")}
+            </p>
+            <p className="mt-2 line-clamp-2 w-full text-center text-xs">
+              Atualizado em {moment(session.updatedAt).format("DD/MM/YYYY")}
             </p>
           </div>
 
@@ -90,13 +98,10 @@ function ModuleSessionCard({ module }: ModuleSessionCardProps) {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Tem certeza que deseja excluír o modulo &quot;{module.name}
-            &quot; ?
-          </DialogTitle>
+          <DialogTitle>Tem certeza que deseja essa seção?</DialogTitle>
           <DialogDescription>
-            Essa ação é irreversível. Ao excluír o modulo, todas as questão
-            serão excluídas junto
+            Essa ação é irreversível. Ao excluír o a sessão, você não poderá
+            continuar de onde parou, caso não tenha concluído a sessão
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -111,7 +116,7 @@ function ModuleSessionCard({ module }: ModuleSessionCardProps) {
             variant="destructive"
             className="mb-2 mt-2 w-full sm:mb-0 sm:mt-0 sm:w-[95px]"
           >
-            {deletingSubject ? (
+            {isPending ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               "Confirmar"

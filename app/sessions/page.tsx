@@ -8,6 +8,7 @@ import EmptyData from "../_components/EmptyData";
 import { FiPlusCircle } from "react-icons/fi";
 import { Button } from "../_components/ui/button";
 import Link from "next/link";
+import ModuleSessionCard from "./_components/ModuleSessionCard";
 
 async function Sessions() {
   const session = await getServerSession(authOptions);
@@ -24,6 +25,8 @@ async function Sessions() {
       },
     },
   });
+
+  console.log(userModuleSessions);
 
   return (
     <>
@@ -44,7 +47,7 @@ async function Sessions() {
       >
         <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {userModuleSessions.map((sessionModule) => (
-            <div key={sessionModule.id}>{sessionModule.progress}</div>
+            <ModuleSessionCard session={sessionModule} key={sessionModule.id} />
           ))}
         </div>
       </Suspense>
