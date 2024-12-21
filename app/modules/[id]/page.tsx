@@ -6,10 +6,9 @@ import AddModuleOrQuestionDialog from "../_components/AddModuleOrQuestionDialog"
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import ModuleCard from "../_components/ModuleCard";
 import EmptyData from "@/app/_components/EmptyData";
-import QuestionCard from "../_components/QuestionCard";
 import StartModuleSession from "../_components/StartModuleSession";
+import ListModulesAndQuestions from "../_components/ListModulesAndQuestions";
 
 interface ModuleProps {
   params: {
@@ -73,18 +72,11 @@ async function Module({ params }: ModuleProps) {
           </div>
         }
       >
-        <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {childrenModules.map((module) => (
-            <ModuleCard module={module} key={module.id} />
-          ))}
-          {childrenQuestions.map((question) => (
-            <QuestionCard
-              question={question}
-              key={question.id}
-              userSubjects={userSubjects}
-            />
-          ))}
-        </div>
+        <ListModulesAndQuestions
+          childrenModules={childrenModules}
+          childrenQuestions={childrenQuestions}
+          userSubjects={userSubjects}
+        />
       </Suspense>
 
       {childrenQuestions.length === 0 && childrenModules.length === 0 && (

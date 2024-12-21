@@ -45,7 +45,7 @@ function ModuleCard({ module }: ModuleCardProps) {
       toast("Modulo excluído com sucesso");
     } catch (error) {
       console.log(error);
-      toast("Erro ao excluír disciplina");
+      toast("Erro ao excluír módulo");
     } finally {
       setDeletingSubject(true);
     }

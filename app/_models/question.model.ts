@@ -23,6 +23,7 @@ export interface Subject {
 export interface Module {
     id: string;
     title: string;
+    description: string;
 }
 
 export interface Option {

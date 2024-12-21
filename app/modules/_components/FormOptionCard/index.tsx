@@ -134,7 +134,12 @@ function FormOptionCard({
             value={option.id}
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className="overflow-hidden border-none"
+            className="overflow-hidden border-none mb-2"
+            style={{
+              ...provided.draggableProps.style,
+              left: "auto !important",
+              top: "auto !important",
+            }}
           >
             <AccordionTrigger
               className={cn(

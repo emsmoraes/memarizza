@@ -16,16 +16,20 @@ export const addQuestion = async (
 
 export const removeQuestion = async (questionId: string) => {
     try {
+        await db.moduleSessionQuestion.deleteMany({
+            where: { questionId }
+        });
+
         await db.question.delete({
-            where: {
-                id: questionId
-            }
-        })
-        revalidatePath("/modules")
+            where: { id: questionId }
+        });
+
+        revalidatePath("/modules");
     } catch (error) {
-        console.log(error)
+        console.log("Erro ao remover a questão e seus relacionamentos:", error);
     }
 };
+
 
 export const updateQuestion = async (
     questionId: string,

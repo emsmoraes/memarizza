@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/app/_components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { FaPlay } from "react-icons/fa";
 import {
   Tooltip,
@@ -18,19 +18,17 @@ interface StartModuleSessionProps {
 }
 
 function StartModuleSession({ moduleId, userId }: StartModuleSessionProps) {
-  const [isLoadingCreatingModuleSession, setIsCreatingModuleSession] =
-    useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const handleCreateModuleSession = async () => {
-    setIsCreatingModuleSession(true);
-    try {
-      await createModuleSession(userId, moduleId);
-      toast("Sessão criada com sucesso");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsCreatingModuleSession(false);
-    }
+  const handleCreateModuleSession = () => {
+    startTransition(async () => {
+      try {
+        await createModuleSession(userId, moduleId);
+        toast("Sessão criada com sucesso");
+      } catch (error) {
+        console.log(error);
+      }
+    });
   };
 
   return (
@@ -38,12 +36,12 @@ function StartModuleSession({ moduleId, userId }: StartModuleSessionProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            disabled={isLoadingCreatingModuleSession}
+            disabled={isPending}
             size="icon"
             className="h-12 w-12 rounded-full transition-transform duration-150 hover:scale-110"
             onClick={handleCreateModuleSession}
           >
-            {isLoadingCreatingModuleSession ? (
+            {isPending ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               <FaPlay size={32} />
@@ -51,7 +49,7 @@ function StartModuleSession({ moduleId, userId }: StartModuleSessionProps) {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          {isLoadingCreatingModuleSession ? (
+          {isPending ? (
             <p>Criando sessão de estudo</p>
           ) : (
             <p>Estudar esse módulo</p>

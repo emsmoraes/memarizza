@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useTransition } from "react";
 import { Button } from "@/app/_components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +62,7 @@ function QuestionForm({
   userSubjects,
   moduleId,
 }: QuestionFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransection] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,8 +72,6 @@ function QuestionForm({
       questionType: "SINGLE_CHOICE",
     },
   });
-
-  console.log(data)
 
   const addOption = () => {
     const currentOptions = form.watch("options") ?? [];
@@ -110,8 +108,7 @@ function QuestionForm({
     return result;
   }
 
-
-  const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const handleSubmit = (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       const options = formData.options.map((option: any) => ({
         text: option.text,
@@ -119,39 +116,38 @@ function QuestionForm({
         description: option.description,
       }));
 
-      try {
-        setIsLoading(true);
-        await addQuestion({
-          module: {
-            connect: {
-              id: moduleId,
+      startTransection(async () => {
+        try {
+          await addQuestion({
+            module: {
+              connect: {
+                id: moduleId,
+              },
             },
-          },
-          subject: {
-            connect: {
-              id: formData.questionSubject,
+            subject: {
+              connect: {
+                id: formData.questionSubject,
+              },
             },
-          },
-          type: formData.questionType as QuestionType,
-          text: formData.questionTitle,
-          options: {
-            create: options,
-          },
-        });
-        setIsOpenDialog((old) => {
-          return !old;
-        });
-        toast("Questão adicionada com sucesso!");
-        form.reset();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Erro ao adicionar. Tente novamente mais tarde.";
-        toast(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
+            type: formData.questionType as QuestionType,
+            text: formData.questionTitle,
+            options: {
+              create: options,
+            },
+          });
+          setIsOpenDialog((old) => {
+            return !old;
+          });
+          toast("Questão adicionada com sucesso!");
+          form.reset();
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Erro ao adicionar. Tente novamente mais tarde.";
+          toast(errorMessage);
+        }
+      });
     }
   };
 
@@ -251,7 +247,7 @@ function QuestionForm({
             <Droppable droppableId="droppable-queue">
               {(provided: DroppableProvided) => (
                 <div
-                  className="mt-3 space-y-2"
+                  className="mt-3"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
@@ -278,10 +274,10 @@ function QuestionForm({
         <div className="mt-11 flex items-end justify-end">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full sm:w-[90px]"
           >
-            {isLoading ? (
+            {isPending ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               "Adicionar"

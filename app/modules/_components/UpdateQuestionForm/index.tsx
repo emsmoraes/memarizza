@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useTransition } from "react";
 import { Button } from "@/app/_components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +64,7 @@ function UpdateQuestionForm({
   questionId,
   initialData,
 }: UpdateQuestionFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -106,9 +106,9 @@ function UpdateQuestionForm({
     return result;
   }
 
-  console.log(initialData)
+  console.log(initialData);
 
-  const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const handleSubmit = (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       const options = formData.options.map((option: any) => ({
         text: option.text,
@@ -128,34 +128,33 @@ function UpdateQuestionForm({
           create: options,
         },
       };
-
-      try {
-        setIsLoading(true);
-        await updateQuestion(questionId, payload);
-        setIsOpenDialog((old) => {
-          console.log(!old);
-          return !old;
-        });
-        toast("Questão editada com sucesso!");
-        form.reset();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Erro ao editar. Tente novamente mais tarde.";
-        toast(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
+      startTransition(async () => {
+        try {
+          await updateQuestion(questionId, payload);
+          setIsOpenDialog((old) => {
+            console.log(!old);
+            return !old;
+          });
+          toast("Questão editada com sucesso!");
+          form.reset();
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Erro ao editar. Tente novamente mais tarde.";
+          toast(errorMessage);
+        }
+      });
     }
   };
 
-  console.log(form.formState.errors)
   return (
     <Form {...form}>
       <DialogHeader className="mb-3 mt-3">
         <DialogTitle>Editar questão</DialogTitle>
-        <DialogDescription />
+        <DialogDescription>
+          Ao editar uma questão, todas as respostas dela serão deletadas
+        </DialogDescription>
       </DialogHeader>
 
       <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -240,12 +239,12 @@ function UpdateQuestionForm({
               </p>
             )}
           </div>
-            
+
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable-queue">
               {(provided: DroppableProvided) => (
                 <div
-                  className="mt-3 space-y-2"
+                  className="mt-3"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
@@ -272,10 +271,10 @@ function UpdateQuestionForm({
         <div className="mt-11 flex items-end justify-end">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full sm:w-[90px]"
           >
-            {isLoading ? (
+            {isPending ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               "Salvar"

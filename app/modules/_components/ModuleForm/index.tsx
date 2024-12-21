@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Button } from "@/app/_components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,7 +39,7 @@ interface ModuleFormProps {
 }
 
 function ModuleForm({ data, setIsOpenDialog, moduleId }: ModuleFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,29 +51,28 @@ function ModuleForm({ data, setIsOpenDialog, moduleId }: ModuleFormProps) {
 
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
-      try {
-        setIsLoading(true);
-        await addModule(
-          formData.moduleName,
-          formData.moduleDescription,
-          data.user.id,
-          moduleId,
-        );
-        setIsOpenDialog((old) => {
-          console.log(!old);
-          return !old;
-        });
-        toast("Módulo adicionado com sucesso!");
-        form.reset();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Erro ao adicionar. Tente novamente mais tarde.";
-        toast(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
+      startTransition(async () => {
+        try {
+          await addModule(
+            formData.moduleName,
+            formData.moduleDescription,
+            data.user.id,
+            moduleId,
+          );
+          setIsOpenDialog((old) => {
+            console.log(!old);
+            return !old;
+          });
+          toast("Módulo adicionado com sucesso!");
+          form.reset();
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Erro ao adicionar. Tente novamente mais tarde.";
+          toast(errorMessage);
+        }
+      });
     }
   };
 
@@ -126,10 +125,10 @@ function ModuleForm({ data, setIsOpenDialog, moduleId }: ModuleFormProps) {
         <div className="flex items-end justify-end">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full sm:w-[90px]"
           >
-            {isLoading ? (
+            {isPending ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               "Adicionar"

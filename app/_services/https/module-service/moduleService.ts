@@ -43,6 +43,12 @@ export const addModule = async (
 
 export const removeModule = async (moduleId: string) => {
     try {
+        await db.moduleSessionModule.deleteMany({
+            where: {
+                moduleId,
+            },
+        });
+
         await db.question.deleteMany({
             where: {
                 moduleId: moduleId,

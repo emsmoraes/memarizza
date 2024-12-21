@@ -82,10 +82,10 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
   };
 
   function removeHtmlAndImages(input: string): string {
-    let result = input.replace(/<img[^>]*>/g, '');
-    
-    result = result.replace(/<\/?[^>]+(>|$)/g, '');
-  
+    let result = input.replace(/<img[^>]*>/g, "");
+
+    result = result.replace(/<\/?[^>]+(>|$)/g, "");
+
     return result;
   }
 
@@ -94,14 +94,14 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
       <Dialog>
         <div
           key={question.id}
-          className={`${styles.glassEffect} group relative flex aspect-square flex-col items-center justify-center rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
+          className={`${styles.glassEffect} group relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
           onClick={handleCardClick}
         >
           <div className="text-center">
             <BsFileEarmarkText className="text-2xl" />
           </div>
           <div className="mt-2 line-clamp-2 w-full">
-            <p className="w-full break-words text-center text-base font-semibold line-clamp-2">
+            <p className="line-clamp-2 w-full break-words text-center text-base font-semibold">
               {removeHtmlAndImages(question.text)}
             </p>
             <p className="w-full break-words text-center text-xs">
@@ -129,7 +129,8 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Tem certeza que deseja excluir a questão &quot;{removeHtmlAndImages(question.text)}
+              Tem certeza que deseja excluir a questão &quot;
+              {removeHtmlAndImages(question.text)}
               &quot;?
             </DialogTitle>
             <DialogDescription>Essa ação é irreversível</DialogDescription>
@@ -158,7 +159,7 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
 
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent
-          className={`max-h-[80vh] overflow-x-auto pt-10 sm:max-w-[600px] translate-x-[-50%] translate-y-[-50%] m-auto`}
+          className={`m-auto max-h-[80vh] translate-x-[-50%] translate-y-[-50%] overflow-x-auto pt-10 sm:max-w-[600px]`}
         >
           <Tabs defaultValue="question">
             <TabsContent value="question">
