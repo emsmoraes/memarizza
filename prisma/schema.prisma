@@ -47,7 +47,6 @@ model User {
   sessions      Session[]
   Answer        Answer[]
   Module        Module[]
-  subject       Subject[]
   ModuleSession ModuleSession[]
 
   @@map("users")
@@ -60,16 +59,6 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
-}
-
-model Subject {
-  id        String     @id @default(cuid())
-  name      String
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questions Question[]
-
-  @@map("subjects")
 }
 
 model Module {
@@ -94,8 +83,6 @@ model Question {
   id                    String                  @id @default(cuid())
   text                  String
   type                  QuestionType
-  subjectId             String
-  subject               Subject                 @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   moduleId              String
   module                Module                  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   options               Option[]

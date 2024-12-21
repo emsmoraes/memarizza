@@ -27,28 +27,20 @@ interface QuestionCardCardProps {
   question: Prisma.QuestionGetPayload<{
     include: {
       options: true;
-      subject: true;
     };
   }>;
-  userSubjects: {
-    id: string;
-    name: string;
-    userId: string;
-  }[];
 }
 
 function formatQuestionForForm(
   question: Prisma.QuestionGetPayload<{
     include: {
       options: true;
-      subject: true;
     };
   }>,
 ) {
   return {
     questionTitle: question.text,
     questionType: question.type,
-    questionSubject: question.subjectId,
     options: question.options?.map((option) => ({
       id: option.id,
       text: option.text,
@@ -58,8 +50,8 @@ function formatQuestionForForm(
   };
 }
 
-function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
-  const [deletingSubject, setDeletingSubject] = useState(false);
+function QuestionCard({ question }: QuestionCardCardProps) {
+  const [deletingQuestion, setDeletingQuestion] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const { data } = useSession();
 
@@ -67,8 +59,8 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
     setShowDetailsDialog(true);
   };
 
-  const handleDeleteSubject = async () => {
-    setDeletingSubject(true);
+  const handleDeleteQuestion = async () => {
+    setDeletingQuestion(true);
 
     try {
       await removeQuestion(question.id);
@@ -77,7 +69,7 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
       console.log(error);
       toast("Erro ao excluír questão");
     } finally {
-      setDeletingSubject(true);
+      setDeletingQuestion(true);
     }
   };
 
@@ -105,7 +97,7 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
               {removeHtmlAndImages(question.text)}
             </p>
             <p className="w-full break-words text-center text-xs">
-              {question.subject.name}
+              Mostrar modulo pai
             </p>
           </div>
 
@@ -142,12 +134,12 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
               </Button>
             </DialogClose>
             <Button
-              onClick={handleDeleteSubject}
+              onClick={handleDeleteQuestion}
               type="button"
               variant="destructive"
               className="mb-2 mt-2 w-full sm:mb-0 sm:mt-0 sm:w-[95px]"
             >
-              {deletingSubject ? (
+              {deletingQuestion ? (
                 <AiOutlineLoading3Quarters className="animate-spin" />
               ) : (
                 "Confirmar"
@@ -168,7 +160,6 @@ function QuestionCard({ question, userSubjects }: QuestionCardCardProps) {
                 initialData={formatQuestionForForm(question)}
                 questionId={question.id}
                 setIsOpenDialog={setShowDetailsDialog}
-                userSubjects={userSubjects}
               />
             </TabsContent>
           </Tabs>

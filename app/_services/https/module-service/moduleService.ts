@@ -36,7 +36,7 @@ export const addModule = async (
         if (existingModuleId)
             revalidatePath(`/modules/${existingModuleId}`)
     } catch (error) {
-        console.error("Error adding subject:", error);
+        console.error("Error adding module:", error);
         throw new Error(error instanceof Error ? error.message : "An unexpected error occurred.");
     }
 };

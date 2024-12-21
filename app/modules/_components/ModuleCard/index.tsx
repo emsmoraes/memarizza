@@ -29,7 +29,7 @@ interface ModuleCardProps {
 }
 
 function ModuleCard({ module }: ModuleCardProps) {
-  const [deletingSubject, setDeletingSubject] = useState(false);
+  const [deletingModule, setDeletingModule] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -38,7 +38,7 @@ function ModuleCard({ module }: ModuleCardProps) {
   };
 
   const handleDeleteModule = async () => {
-    setDeletingSubject(true);
+    setDeletingModule(true);
 
     try {
       await removeModule(module.id);
@@ -47,7 +47,7 @@ function ModuleCard({ module }: ModuleCardProps) {
       console.log(error);
       toast("Erro ao excluír módulo");
     } finally {
-      setDeletingSubject(true);
+      setDeletingModule(true);
     }
   };
 
@@ -111,7 +111,7 @@ function ModuleCard({ module }: ModuleCardProps) {
             variant="destructive"
             className="mb-2 mt-2 w-full sm:mb-0 sm:mt-0 sm:w-[95px]"
           >
-            {deletingSubject ? (
+            {deletingModule ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
               "Confirmar"

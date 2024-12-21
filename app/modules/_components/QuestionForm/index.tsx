@@ -49,17 +49,11 @@ interface QuestionFormProps {
   moduleId: string;
   data: Session | null;
   setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  userSubjects: {
-    id: string;
-    name: string;
-    userId: string;
-  }[];
 }
 
 function QuestionForm({
   data,
   setIsOpenDialog,
-  userSubjects,
   moduleId,
 }: QuestionFormProps) {
   const [isPending, startTransection] = useTransition();
@@ -68,7 +62,6 @@ function QuestionForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       questionTitle: "",
-      questionSubject: "",
       questionType: "SINGLE_CHOICE",
     },
   });
@@ -124,11 +117,6 @@ function QuestionForm({
                 id: moduleId,
               },
             },
-            subject: {
-              connect: {
-                id: formData.questionSubject,
-              },
-            },
             type: formData.questionType as QuestionType,
             text: formData.questionTitle,
             options: {
@@ -169,30 +157,6 @@ function QuestionForm({
               <FormLabel>Título da questão</FormLabel>
               <FormControl>
                 <RichText content={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="questionSubject"
-          render={({ field }) => (
-            <FormItem className="mb-4 w-full">
-              <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione a disciplina" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {userSubjects?.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

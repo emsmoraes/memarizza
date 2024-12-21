@@ -4,18 +4,11 @@ import { Prisma } from "@prisma/client";
 import React from "react";
 import ModuleCard from "../ModuleCard";
 import QuestionCard from "../QuestionCard";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "@hello-pangea/dnd";
 
 interface ListModulesAndQuestionsProps {
   childrenQuestions: Prisma.QuestionGetPayload<{
     include: {
       options: true;
-      subject: true;
     };
   }>[];
 
@@ -26,17 +19,11 @@ interface ListModulesAndQuestionsProps {
     userId: string;
     parentId: string | null;
   }[];
-  userSubjects: {
-    name: string;
-    id: string;
-    userId: string;
-  }[];
 }
 
 function ListModulesAndQuestions({
   childrenModules,
   childrenQuestions,
-  userSubjects,
 }: ListModulesAndQuestionsProps) {
   return (
     <div>
@@ -51,7 +38,6 @@ function ListModulesAndQuestions({
           <QuestionCard
             question={question}
             key={question.id}
-            userSubjects={userSubjects}
           />
         ))}
       </div>

@@ -9,15 +9,9 @@ export interface Question {
     id: string;
     text: string;
     type: QuestionType;
-    subject: Subject;
     module: Module;
     options: Option[];
     answers: Answer[];
-}
-
-export interface Subject {
-    id: string;
-    name: string;
 }
 
 export interface Module {

@@ -40,15 +40,8 @@ async function Module({ params }: ModuleProps) {
       },
       include: {
         options: true,
-        subject: true,
       },
     })) ?? [];
-
-  const userSubjects = await db.subject.findMany({
-    where: {
-      userId: session?.user?.id,
-    },
-  });
 
   return (
     <Dialog>
@@ -57,7 +50,6 @@ async function Module({ params }: ModuleProps) {
       <div className="flex w-full items-center justify-between">
         <AddModuleOrQuestionDialog
           moduleId={params.id}
-          userSubjects={userSubjects}
         />
         <StartModuleSession
           moduleId={moduleData?.id ?? ""}
@@ -75,7 +67,6 @@ async function Module({ params }: ModuleProps) {
         <ListModulesAndQuestions
           childrenModules={childrenModules}
           childrenQuestions={childrenQuestions}
-          userSubjects={userSubjects}
         />
       </Suspense>
 

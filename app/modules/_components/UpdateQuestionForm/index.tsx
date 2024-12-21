@@ -48,11 +48,6 @@ import { formSchema } from "./schema";
 interface UpdateQuestionFormProps {
   data: Session | null;
   setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  userSubjects: {
-    id: string;
-    name: string;
-    userId: string;
-  }[];
   initialData: any;
   questionId: string;
 }
@@ -60,7 +55,6 @@ interface UpdateQuestionFormProps {
 function UpdateQuestionForm({
   data,
   setIsOpenDialog,
-  userSubjects,
   questionId,
   initialData,
 }: UpdateQuestionFormProps) {
@@ -117,11 +111,6 @@ function UpdateQuestionForm({
       }));
 
       const payload = {
-        subject: {
-          connect: {
-            id: formData.questionSubject,
-          },
-        },
         type: formData.questionType as QuestionType,
         text: formData.questionTitle,
         options: {
@@ -132,7 +121,6 @@ function UpdateQuestionForm({
         try {
           await updateQuestion(questionId, payload);
           setIsOpenDialog((old) => {
-            console.log(!old);
             return !old;
           });
           toast("Questão editada com sucesso!");
@@ -166,30 +154,6 @@ function UpdateQuestionForm({
               <FormLabel>Título da questão</FormLabel>
               <FormControl>
                 <RichText content={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="questionSubject"
-          render={({ field }) => (
-            <FormItem className="mb-4 w-full">
-              <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione a disciplina" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {userSubjects?.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

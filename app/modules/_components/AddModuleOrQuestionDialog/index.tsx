@@ -20,16 +20,10 @@ import QuestionForm from "../QuestionForm";
 
 interface AddModuleOrQuestionDialogProps {
   moduleId: string | null;
-  userSubjects: {
-    id: string;
-    name: string;
-    userId: string;
-  }[];
 }
 
 function AddModuleOrQuestionDialog({
   moduleId,
-  userSubjects,
 }: AddModuleOrQuestionDialogProps) {
   const { data } = useSession();
   const [isOpenDialog, setIsOpenDialog] = useState(false);
@@ -71,7 +65,6 @@ function AddModuleOrQuestionDialog({
             <QuestionForm
               data={data}
               setIsOpenDialog={setIsOpenDialog}
-              userSubjects={userSubjects}
               moduleId={moduleId ?? ""}
             />
           </TabsContent>

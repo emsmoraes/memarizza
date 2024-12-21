@@ -30,8 +30,8 @@ async function page() {
         }
       >
         <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {userModules.map((subject) => (
-            <ModuleCard module={subject} key={subject.id} />
+          {userModules.map((module) => (
+            <ModuleCard module={module} key={module.id} />
           ))}
         </div>
       </Suspense>

@@ -15,7 +15,6 @@ export const formSchema = z.object({
       "O título precisa de no mínimo 5 caracteres",
     ),
   questionType: z.string().min(3, "Selecione uma opção"),
-  questionSubject: z.string().min(1, "Selecione uma opção"),
   options: z
     .array(
       z.object({

@@ -32,19 +32,12 @@ async function Module({ params }: ModuleProps) {
     },
   });
 
-  const userSubjects = await db.subject.findMany({
-    where: {
-      userId: session?.user?.id,
-    },
-  });
-
   const childrenQuestions = await db.question.findMany({
     where: {
       moduleId: currentSubmoduleId,
     },
     include: {
       options: true,
-      subject: true,
     },
   });
 
@@ -53,7 +46,6 @@ async function Module({ params }: ModuleProps) {
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
       <AddModuleOrQuestionDialog
         moduleId={currentSubmoduleId}
-        userSubjects={userSubjects}
       />
 
       <Suspense
@@ -66,7 +58,6 @@ async function Module({ params }: ModuleProps) {
         <ListModulesAndQuestions
           childrenModules={childrenModules}
           childrenQuestions={childrenQuestions}
-          userSubjects={userSubjects}
         />
       </Suspense>
 
