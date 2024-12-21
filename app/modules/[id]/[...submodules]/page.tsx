@@ -38,6 +38,7 @@ async function Module({ params }: ModuleProps) {
     },
     include: {
       options: true,
+      module: true,
     },
   });
 
@@ -45,6 +46,8 @@ async function Module({ params }: ModuleProps) {
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
       <AddModuleOrQuestionDialog
+        hasModules={childrenModules.length > 0}
+        hasQuestions={childrenQuestions.length > 0}
         moduleId={currentSubmoduleId}
       />
 

@@ -9,6 +9,7 @@ interface ListModulesAndQuestionsProps {
   childrenQuestions: Prisma.QuestionGetPayload<{
     include: {
       options: true;
+      module: true
     };
   }>[];
 

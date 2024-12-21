@@ -20,10 +20,14 @@ import QuestionForm from "../QuestionForm";
 
 interface AddModuleOrQuestionDialogProps {
   moduleId: string | null;
+  hasQuestions: boolean;
+  hasModules: boolean;
 }
 
 function AddModuleOrQuestionDialog({
   moduleId,
+  hasModules,
+  hasQuestions
 }: AddModuleOrQuestionDialogProps) {
   const { data } = useSession();
   const [isOpenDialog, setIsOpenDialog] = useState(false);
@@ -49,8 +53,8 @@ function AddModuleOrQuestionDialog({
           }`}
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="module">Modulo</TabsTrigger>
-            <TabsTrigger value="question">Questão</TabsTrigger>
+            <TabsTrigger value="module" disabled={hasQuestions}>Modulo</TabsTrigger>
+            <TabsTrigger value="question" disabled={hasModules}>Questão</TabsTrigger>
           </TabsList>
 
           <TabsContent value="module">

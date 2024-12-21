@@ -6,13 +6,31 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 
 export const addQuestion = async (
-    data: Prisma.QuestionCreateInput
+    data: Prisma.QuestionCreateInput,
+    moduleId: string
 ) => {
-    await db.question.create({
-        data,
-    });
-    revalidatePath("/modules")
-}
+    try {
+        const foundModule = await db.module.findUnique({
+            where: { id: moduleId },
+            include: {
+                submodules: true,
+            },
+        });
+
+        if (foundModule && foundModule.submodules.length > 0) {
+            throw new Error("Não é possível criar questões em módulos que possuem submódulos.");
+        }
+
+        await db.question.create({
+            data,
+        });
+
+        revalidatePath("/modules");
+    } catch (error) {
+        console.error("Error adding question:", error);
+        throw new Error(error instanceof Error ? error.message : "An unexpected error occurred.");
+    }
+};
 
 export const removeQuestion = async (questionId: string) => {
     try {

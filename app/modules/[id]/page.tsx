@@ -40,6 +40,7 @@ async function Module({ params }: ModuleProps) {
       },
       include: {
         options: true,
+        module: true,
       },
     })) ?? [];
 
@@ -49,6 +50,8 @@ async function Module({ params }: ModuleProps) {
 
       <div className="flex w-full items-center justify-between">
         <AddModuleOrQuestionDialog
+          hasModules={childrenModules.length > 0}
+          hasQuestions={childrenQuestions.length > 0}
           moduleId={params.id}
         />
         <StartModuleSession

@@ -22,6 +22,19 @@ export const addModule = async (
             throw new Error("Já existe um módulo com esse nome");
         }
 
+        if (existingModuleId) {
+            const existingModuleWithQuestions = await db.module.findUnique({
+                where: { id: existingModuleId },
+                include: {
+                    questions: true,
+                },
+            });
+
+            if (existingModuleWithQuestions && existingModuleWithQuestions.questions.length > 0) {
+                throw new Error("O módulo de origem já possui questões associadas. Não é possível adicionar submódulos.");
+            }
+        }
+
         await db.module.create({
             data: {
                 name: moduleName,

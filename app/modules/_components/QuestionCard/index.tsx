@@ -27,6 +27,7 @@ interface QuestionCardCardProps {
   question: Prisma.QuestionGetPayload<{
     include: {
       options: true;
+      module: true
     };
   }>;
 }
@@ -35,6 +36,7 @@ function formatQuestionForForm(
   question: Prisma.QuestionGetPayload<{
     include: {
       options: true;
+      module: true
     };
   }>,
 ) {
@@ -97,7 +99,7 @@ function QuestionCard({ question }: QuestionCardCardProps) {
               {removeHtmlAndImages(question.text)}
             </p>
             <p className="w-full break-words text-center text-xs">
-              Mostrar modulo pai
+              {question.module.name}
             </p>
           </div>
 
