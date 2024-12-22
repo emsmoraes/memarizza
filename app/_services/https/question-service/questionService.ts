@@ -70,3 +70,143 @@ export const updateQuestion = async (
 
     revalidatePath("/modules");
 };
+
+export const searchQuestionsByTextAndModule = async (
+    searchText: string,
+    moduleId?: string
+) => {
+    try {
+        const modules = await db.module.findMany({
+            include: {
+                submodules: {
+                    include: {
+                        questions: {
+                            include: {
+                                options: true,
+                                module: true
+                            }
+                        },
+                    },
+                },
+                questions: {
+                    include: {
+                        options: true,
+                        module: true
+                    }
+                },
+            },
+        });
+
+        const foundQuestionsByText = await db.question.findMany({
+            where: {
+                text: {
+                    contains: searchText,
+                    mode: "insensitive",
+                },
+            },
+            include: {
+                options: true,
+                module: true
+            }
+        });
+
+        const filteredModules = modules.filter(module =>
+            module.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+
+        const matchedQuestionsFromModules = filteredModules.flatMap((module) => [
+            ...module.questions,
+            ...module.submodules.flatMap((submodule) => submodule.questions),
+        ]);
+
+        const allFoundQuestions = [
+            ...foundQuestionsByText,
+            ...matchedQuestionsFromModules,
+        ];
+
+        console.log(moduleId)
+
+        const filteredQuestions = moduleId
+        ? allFoundQuestions.filter(
+            (question) => question.module.id !== moduleId
+          )
+        : allFoundQuestions;
+
+        console.log(allFoundQuestions)
+  
+      const uniqueQuestions = Array.from(
+        new Set(filteredQuestions.map((question) => question.id))
+      )
+        .map((id) => filteredQuestions.find((question) => question.id === id))
+        .filter((question): question is NonNullable<typeof question> => !!question);
+  
+      return uniqueQuestions;
+
+    } catch (error) {
+        console.error("Erro ao buscar questões:", error);
+        throw new Error(error instanceof Error ? error.message : "Erro inesperado ao buscar questões.");
+    }
+};
+
+export const cloneQuestionsToModule = async (
+    questionIds: string[],
+    targetModuleId: string
+  ) => {
+    try {
+      const targetModule = await db.module.findUnique({
+        where: { id: targetModuleId },
+      });
+  
+      if (!targetModule) {
+        throw new Error("O módulo de destino não foi encontrado.");
+      }
+  
+      const questionsToClone = await db.question.findMany({
+        where: { id: { in: questionIds } },
+        include: {
+          options: true,
+        },
+      });
+  
+      if (questionsToClone.length === 0) {
+        throw new Error("Nenhuma questão válida foi encontrada para clonar.");
+      }
+  
+      await db.question.createMany({
+        data: questionsToClone.map((question) => ({
+          text: question.text,
+          type: question.type,
+          moduleId: targetModuleId,
+        })),
+      });
+  
+      const clonedQuestionsWithId = await db.question.findMany({
+        where: {
+          moduleId: targetModuleId,
+          text: { in: questionsToClone.map((q) => q.text) },
+        },
+      });
+  
+      if (clonedQuestionsWithId.length !== questionsToClone.length) {
+        throw new Error("Erro ao clonar todas as questões.");
+      }
+  
+      const optionsToCreate = questionsToClone.flatMap((question, index) =>
+        question.options.map((option) => ({
+          text: option.text,
+          isCorrect: option.isCorrect,
+          questionId: clonedQuestionsWithId[index].id,
+        }))
+      );
+  
+      await db.option.createMany({
+        data: optionsToCreate,
+      });
+  
+      revalidatePath("/modules");
+    } catch (error) {
+      console.error("Erro ao clonar questões:", error);
+      throw new Error(error instanceof Error ? error.message : "Ocorreu um erro inesperado.");
+    }
+  };
+  

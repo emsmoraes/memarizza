@@ -37,7 +37,6 @@ function AddModuleOrQuestionDialog({
     <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <Tabs
         defaultValue="module"
-        className="w-[400px]"
         onValueChange={setActiveTab}
       >
         <DialogTrigger asChild>

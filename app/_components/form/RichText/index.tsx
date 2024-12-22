@@ -51,9 +51,10 @@ const addImage = (editor: any) => {
 interface RichTextProps {
   content: string;
   onChange: (content: string) => void;
+  readOnly?: boolean;
 }
 
-const RichText: React.FC<RichTextProps> = ({ content, onChange }) => {
+const RichText: React.FC<RichTextProps> = ({ content, onChange, readOnly = false }) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -67,9 +68,11 @@ const RichText: React.FC<RichTextProps> = ({ content, onChange }) => {
     ],
     editorProps: {
       attributes: {
-        class:
-          "flex flex-col px-4 py-3 justify-start border-b border-r border-l border-gray-700 text-gray-400 items-start w-full gap-3 font-medium text-[16px] pt-4 rounded-bl-md rounded-br-md",
+        class: `flex flex-col px-4 py-3 justify-start border-b border-r border-l ${
+          readOnly ? "border-t" : ""
+        } border-gray-700 text-gray-400 items-start w-full gap-3 font-medium text-[16px] pt-4 rounded-bl-md rounded-br-md`,
       },
+      editable: () => !readOnly,
     },
     content: content,
     onUpdate: ({ editor }) => {
@@ -183,24 +186,27 @@ const RichText: React.FC<RichTextProps> = ({ content, onChange }) => {
   return (
     <TooltipProvider>
       <div className="w-full">
-        <div className="flex w-full flex-wrap items-start gap-2 rounded-tl-md rounded-tr-md border border-gray-700 px-4 py-3">
-          {actions.map(({ icon: Icon, tooltip, action, active }, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={action}
-                  className={active() ? activeClass : inactiveClass}
-                >
-                  <Icon />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tooltip} </p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
+        {!readOnly &&
+         <div className="flex w-full flex-wrap items-start gap-2 rounded-tl-md rounded-tr-md border border-gray-700 px-4 py-3">
+         {actions.map(({ icon: Icon, tooltip, action, active }, index) => (
+           <Tooltip key={index}>
+             <TooltipTrigger asChild>
+               <button
+                 type="button"
+                 onClick={action}
+                 className={active() ? activeClass : inactiveClass}
+               >
+                 <Icon />
+               </button>
+             </TooltipTrigger>
+             <TooltipContent>
+               <p>{tooltip}</p>
+             </TooltipContent>
+           </Tooltip>
+         ))}
+       </div>
+        }
+       
         <EditorContent editor={editor} />
         <style jsx global>
           {`

@@ -9,6 +9,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import EmptyData from "@/app/_components/EmptyData";
 import StartModuleSession from "../_components/StartModuleSession";
 import ListModulesAndQuestions from "../_components/ListModulesAndQuestions";
+import ImportQuestions from "../_components/ImportQuestions";
 
 interface ModuleProps {
   params: {
@@ -49,11 +50,15 @@ async function Module({ params }: ModuleProps) {
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
 
       <div className="flex w-full items-center justify-between">
-        <AddModuleOrQuestionDialog
-          hasModules={childrenModules.length > 0}
-          hasQuestions={childrenQuestions.length > 0}
-          moduleId={params.id}
-        />
+        <div className="flex items-center gap-3">
+          <AddModuleOrQuestionDialog
+            hasModules={childrenModules.length > 0}
+            hasQuestions={childrenQuestions.length > 0}
+            moduleId={params.id}
+          />
+          <ImportQuestions moduleId={params.id}/>
+        </div>
+
         <StartModuleSession
           moduleId={moduleData?.id ?? ""}
           userId={session?.user?.id ?? ""}

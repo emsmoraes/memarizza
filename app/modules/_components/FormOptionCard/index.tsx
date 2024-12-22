@@ -24,6 +24,7 @@ import { Textarea } from "@/app/_components/ui/textarea";
 
 interface FormOptionCardProps {
   index: number;
+  readOnly?: boolean;
   questionType: QuestionType;
   option: {
     id: string;
@@ -48,6 +49,7 @@ function FormOptionCard({
   error,
   index,
   questionType,
+  readOnly = false,
 }: FormOptionCardProps) {
   const { setValue, getValues } = useFormContext();
   const [newText, setNewText] = useState(option.text);
@@ -121,7 +123,12 @@ function FormOptionCard({
   };
 
   return (
-    <Draggable key={option.id} draggableId={option.id} index={index}>
+    <Draggable
+      key={option.id}
+      draggableId={option.id}
+      index={index}
+      isDragDisabled={readOnly}
+    >
       {(provided: DraggableProvided) => (
         <Accordion
           type="single"
@@ -134,7 +141,7 @@ function FormOptionCard({
             value={option.id}
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className="overflow-hidden border-none mb-2"
+            className="mb-2 overflow-hidden border-none"
             style={{
               ...provided.draggableProps.style,
               left: "auto !important",
@@ -157,44 +164,59 @@ function FormOptionCard({
                 {error?.text?.message && (
                   <p className="block w-full">{error?.text?.message}</p>
                 )}
-                <span
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleCorrect();
-                  }}
-                  className="ml-2 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-primary/10"
-                >
-                  {option.isCorrect ? (
-                    <Check className="h-4 w-4 min-w-4 text-green-500" />
-                  ) : (
-                    <X className="h-4 w-4 min-w-4 text-red-500" />
-                  )}
-                </span>
+                {!readOnly && (
+                  <span
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleCorrect();
+                    }}
+                    className="ml-2 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-primary/10"
+                  >
+                    {option.isCorrect ? (
+                      <Check className="h-4 w-4 min-w-4 text-green-500" />
+                    ) : (
+                      <X className="h-4 w-4 min-w-4 text-red-500" />
+                    )}
+                  </span>
+                )}
               </div>
             </AccordionTrigger>
             <AccordionContent className="rounded-b-lg bg-zinc-100/10 px-4 py-4 data-[state=closed]:hidden">
               <div className="flex flex-col items-end justify-center gap-2">
-                <RichText content={newText} onChange={setNewText} />
-                <Textarea
-                  className="border-b border-l border-r border-gray-700 px-4 py-3 text-gray-400"
-                  placeholder="Descreva o motivo dessa opção estar correta ou errada (opicional)"
-                  onChange={(e) => setDescriptionText(e.target.value)}
-                  value={descriptionText ?? ""}
+                <RichText
+                  content={newText}
+                  onChange={setNewText}
+                  readOnly={readOnly}
                 />
-                <div className="mt-2 flex gap-2">
-                  <Button
-                    onClick={handleDeleteOption}
-                    size="sm"
-                    variant="destructive"
-                    type={"button"}
-                  >
-                    Excluir
-                  </Button>
-                  <Button onClick={handleTextChange} size="sm" type={"button"}>
-                    Salvar
-                  </Button>
-                </div>
+                {!readOnly && (
+                  <Textarea
+                    className="border-b border-l border-r border-gray-700 px-4 py-3 text-gray-400"
+                    placeholder="Descreva o motivo dessa opção estar correta ou errada (opicional)"
+                    onChange={(e) => setDescriptionText(e.target.value)}
+                    value={descriptionText ?? ""}
+                  />
+                )}
+
+                {!readOnly && (
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      onClick={handleDeleteOption}
+                      size="sm"
+                      variant="destructive"
+                      type={"button"}
+                    >
+                      Excluir
+                    </Button>
+                    <Button
+                      onClick={handleTextChange}
+                      size="sm"
+                      type={"button"}
+                    >
+                      Salvar
+                    </Button>
+                  </div>
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>
