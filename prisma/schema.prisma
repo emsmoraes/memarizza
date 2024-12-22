@@ -82,6 +82,7 @@ model Module {
 model Question {
   id                    String                  @id @default(cuid())
   text                  String
+  public                Boolean                 @default(true)
   type                  QuestionType
   moduleId              String
   module                Module                  @relation(fields: [moduleId], references: [id], onDelete: Cascade)

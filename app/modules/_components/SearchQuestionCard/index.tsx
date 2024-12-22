@@ -13,6 +13,7 @@ import { IoCloseOutline } from "react-icons/io5";
 interface SearchQuestionCardCardProps {
   isSelected: boolean;
   handleToggleQuestionId: (questionId: string) => void;
+  isPendingAddingQuestions: boolean;
   question: Prisma.QuestionGetPayload<{
     include: {
       options: true;
@@ -45,6 +46,7 @@ function SearchQuestionCard({
   question,
   handleToggleQuestionId,
   isSelected,
+  isPendingAddingQuestions
 }: SearchQuestionCardCardProps) {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
@@ -103,7 +105,13 @@ function SearchQuestionCard({
           <Tabs defaultValue="question">
             <TabsContent value="question">
               <DisabledQuestionForm
+                isPendingAddingQuestions={isPendingAddingQuestions}
                 initialData={formatQuestionForForm(question)}
+                handleToggleQuestionId={() => {
+                  handleToggleQuestionId(question.id);
+                  setShowDetailsDialog(false);
+                }}
+                isSelected={isSelected}
               />
             </TabsContent>
           </Tabs>

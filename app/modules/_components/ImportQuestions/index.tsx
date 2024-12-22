@@ -63,7 +63,7 @@ function ImportQuestions({ moduleId }: { moduleId: string }) {
             (question) => !selectedQuestionsIds.includes(question.id),
           ),
         );
-        handleClearSelectedQuestions()
+        handleClearSelectedQuestions();
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -145,6 +145,7 @@ function ImportQuestions({ moduleId }: { moduleId: string }) {
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {questions.map((question) => (
             <SearchQuestionCard
+              isPendingAddingQuestions={isPendingAddingQuestions}
               question={question}
               key={question.id}
               isSelected={selectedQuestionsIds.includes(question.id)}

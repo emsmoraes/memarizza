@@ -38,12 +38,21 @@ import {
 import { QuestionType } from "@/app/_models/question.model";
 import { formSchema } from "./schema";
 import { Button } from "@/app/_components/ui/button";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface DisabledQuestionFormProps {
   initialData: any;
+  isPendingAddingQuestions: boolean;
+  isSelected: boolean;
+  handleToggleQuestionId: () => void;
 }
 
-function DisabledQuestionForm({ initialData }: DisabledQuestionFormProps) {
+function DisabledQuestionForm({
+  initialData,
+  isPendingAddingQuestions,
+  handleToggleQuestionId,
+  isSelected,
+}: DisabledQuestionFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
@@ -153,7 +162,20 @@ function DisabledQuestionForm({ initialData }: DisabledQuestionFormProps) {
         </>
 
         <div className="mt-11 flex items-end justify-end">
-          <Button className="w-full">Adicionar ao modulo</Button>
+          <Button
+            type="button"
+            className="flex w-full items-center justify-center"
+            onClick={handleToggleQuestionId}
+            disabled={isPendingAddingQuestions}
+          >
+            {isPendingAddingQuestions ? (
+              <AiOutlineLoading3Quarters className="animate-spin" />
+            ) : isSelected ? (
+              "Remover"
+            ) : (
+              "Adicionar ao módulo"
+            )}
+          </Button>
         </div>
       </form>
     </Form>

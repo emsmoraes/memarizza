@@ -80,20 +80,22 @@ export const searchQuestionsByTextAndModule = async (
             include: {
                 submodules: {
                     include: {
-                        questions: {
-                            include: {
-                                options: true,
-                                module: true
-                            }
+                      questions: {
+                        where: { public: true },
+                        include: {
+                            options: true,
+                            module: true,
                         },
+                    },
                     },
                 },
                 questions: {
-                    include: {
-                        options: true,
-                        module: true
-                    }
-                },
+                  where: { public: true },
+                  include: {
+                      options: true,
+                      module: true,
+                  },
+              },
             },
         });
 
@@ -103,6 +105,7 @@ export const searchQuestionsByTextAndModule = async (
                     contains: searchText,
                     mode: "insensitive",
                 },
+                public: true
             },
             include: {
                 options: true,
@@ -124,16 +127,12 @@ export const searchQuestionsByTextAndModule = async (
             ...matchedQuestionsFromModules,
         ];
 
-        console.log(moduleId)
-
         const filteredQuestions = moduleId
         ? allFoundQuestions.filter(
             (question) => question.module.id !== moduleId
           )
         : allFoundQuestions;
 
-        console.log(allFoundQuestions)
-  
       const uniqueQuestions = Array.from(
         new Set(filteredQuestions.map((question) => question.id))
       )
@@ -177,6 +176,7 @@ export const cloneQuestionsToModule = async (
           text: question.text,
           type: question.type,
           moduleId: targetModuleId,
+          public: false,
         })),
       });
   
