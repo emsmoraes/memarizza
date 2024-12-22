@@ -8,11 +8,11 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const askQuestion = (query) => {
+const askQuestion = (query: string): Promise<string> => {
   return new Promise((resolve) => rl.question(query, resolve));
 };
 
-const createOptionsForQuestion = async (questionId) => {
+const createOptionsForQuestion = async (questionId: string) => {
   const optionsData = [
     { text: "Option 1", description: "Description for option 1", isCorrect: false },
     { text: "Option 2", description: "Description for option 2", isCorrect: false },
@@ -32,7 +32,7 @@ const createOptionsForQuestion = async (questionId) => {
   }
 };
 
-const createQuestions = async (numQuestions, moduleId) => {
+const createQuestions = async (numQuestions: number, moduleId: string): Promise<void> => {
   try {
     for (let i = 1; i <= numQuestions; i++) {
       const question = await prisma.question.create({
