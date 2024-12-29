@@ -8,6 +8,7 @@ import EmptyData from "@/app/_components/EmptyData";
 import ModulePageHeader from "../../_components/ModulePageHeader";
 import AddModuleOrQuestionDialog from "../../_components/AddModuleOrQuestionDialog";
 import ListModulesAndQuestions from "../../_components/ListModulesAndQuestions";
+import ImportQuestions from "../../_components/ImportQuestions";
 
 interface ModuleProps {
   params: {
@@ -45,11 +46,15 @@ async function Module({ params }: ModuleProps) {
   return (
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
-      <AddModuleOrQuestionDialog
-        hasModules={childrenModules.length > 0}
-        hasQuestions={childrenQuestions.length > 0}
-        moduleId={currentSubmoduleId}
-      />
+
+      <div className="flex items-center gap-3">
+        <AddModuleOrQuestionDialog
+          hasModules={childrenModules.length > 0}
+          hasQuestions={childrenQuestions.length > 0}
+          moduleId={currentSubmoduleId}
+        />
+        <ImportQuestions moduleId={currentSubmoduleId} />
+      </div>
 
       <Suspense
         fallback={

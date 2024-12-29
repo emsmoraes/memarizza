@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import { Dialog } from "../_components/ui/dialog";
-import PageHeader from "../_components/PageHeader";
 import EmptyData from "../_components/EmptyData";
 import AddModuleDialog from "./_components/AddModuleDialog";
 import { getServerSession } from "next-auth";
@@ -8,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import ModuleCard from "./_components/ModuleCard";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import PageHeader from "../_components/pageHeader";
 
 async function page() {
   const session = await getServerSession(authOptions);

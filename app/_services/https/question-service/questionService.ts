@@ -72,79 +72,86 @@ export const updateQuestion = async (
 };
 
 export const searchQuestionsByTextAndModule = async (
-    searchText: string,
-    moduleId?: string
+  searchText: string,
+  moduleId?: string,
+  page: number = 1,
+  limit: number = 20
 ) => {
-    try {
-        const modules = await db.module.findMany({
-            include: {
-                submodules: {
-                    include: {
+  try {
+      const skip = (page - 1) * limit;
+      const take = limit;
+
+      const modules = await db.module.findMany({
+          include: {
+              submodules: {
+                  include: {
                       questions: {
-                        where: { public: true },
-                        include: {
-                            options: true,
-                            module: true,
-                        },
-                    },
-                    },
-                },
-                questions: {
+                          where: { public: true },
+                          include: {
+                              options: true,
+                              module: true,
+                          },
+                      },
+                  },
+              },
+              questions: {
                   where: { public: true },
                   include: {
                       options: true,
                       module: true,
                   },
               },
-            },
-        });
+          },
+      });
 
-        const foundQuestionsByText = await db.question.findMany({
-            where: {
-                text: {
-                    contains: searchText,
-                    mode: "insensitive",
-                },
-                public: true
-            },
-            include: {
-                options: true,
-                module: true
-            }
-        });
+      const foundQuestionsByText = await db.question.findMany({
+          where: {
+              text: {
+                  contains: searchText,
+                  mode: "insensitive",
+              },
+              public: true,
+          },
+          include: {
+              options: true,
+              module: true,
+          },
+      });
 
-        const filteredModules = modules.filter(module =>
-            module.name.toLowerCase().includes(searchText.toLowerCase())
-        );
+      const filteredModules = modules.filter((module) =>
+          module.name.toLowerCase().includes(searchText.toLowerCase())
+      );
 
-        const matchedQuestionsFromModules = filteredModules.flatMap((module) => [
-            ...module.questions,
-            ...module.submodules.flatMap((submodule) => submodule.questions),
-        ]);
+      const matchedQuestionsFromModules = filteredModules.flatMap((module) => [
+          ...module.questions,
+          ...module.submodules.flatMap((submodule) => submodule.questions),
+      ]);
 
-        const allFoundQuestions = [
-            ...foundQuestionsByText,
-            ...matchedQuestionsFromModules,
-        ];
+      const allFoundQuestions = [
+          ...foundQuestionsByText,
+          ...matchedQuestionsFromModules,
+      ];
 
-        const filteredQuestions = moduleId
-        ? allFoundQuestions.filter(
-            (question) => question.module.id !== moduleId
+      const filteredQuestions = moduleId
+          ? allFoundQuestions.filter(
+              (question) => question.module.id !== moduleId
           )
-        : allFoundQuestions;
+          : allFoundQuestions;
 
       const uniqueQuestions = Array.from(
-        new Set(filteredQuestions.map((question) => question.id))
+          new Set(filteredQuestions.map((question) => question.id))
       )
-        .map((id) => filteredQuestions.find((question) => question.id === id))
-        .filter((question): question is NonNullable<typeof question> => !!question);
-  
-      return uniqueQuestions;
+          .map((id) => filteredQuestions.find((question) => question.id === id))
+          .filter((question): question is NonNullable<typeof question> => !!question);
 
-    } catch (error) {
-        console.error("Erro ao buscar questões:", error);
-        throw new Error(error instanceof Error ? error.message : "Erro inesperado ao buscar questões.");
-    }
+      const paginatedQuestions = uniqueQuestions.slice(skip, skip + take);
+
+      return paginatedQuestions
+
+  } catch (error) {
+      console.error("Erro ao buscar questões:", error);
+      throw new Error(error instanceof Error ? error.message : "Erro inesperado ao buscar questões.");
+  }
 };
 
 export const cloneQuestionsToModule = async (

@@ -19,11 +19,13 @@ import { LuImport } from "react-icons/lu";
 import { Prisma } from "@prisma/client";
 import SearchQuestionCard from "../SearchQuestionCard";
 import { toast } from "sonner";
+import { BsPlus } from "react-icons/bs";
 
 function ImportQuestions({ moduleId }: { moduleId: string }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
+  const [page, setPage] = useState(1);
   const [questions, setQuestions] = useState<
     Prisma.QuestionGetPayload<{
       include: {
@@ -74,6 +76,18 @@ function ImportQuestions({ moduleId }: { moduleId: string }) {
     });
   };
 
+  const handleLoadMore = () => {
+    startTransition(async () => {
+      setPage((old) => old + 1);
+      const questionsData = await searchQuestionsByTextAndModule(
+        searchValue,
+        moduleId,
+        page + 1,
+      );
+      setQuestions((prev) => [...prev, ...(questionsData ?? [])]);
+    });
+  };
+
   const debounce = <T extends (...args: string[]) => void>(
     cb: T,
     delay: number = 1000,
@@ -111,7 +125,19 @@ function ImportQuestions({ moduleId }: { moduleId: string }) {
   }, [searchQuestions]);
 
   return (
-    <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
+    <Dialog
+      open={isOpenDialog}
+      onOpenChange={(open) => {
+        handleClearSelectedQuestions();
+        setIsOpenDialog(open);
+        setPage(1);
+        setQuestions([]);
+
+        if (open) 
+        setSearchValue("");
+        searchQuestions();
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant={"outline"} className="border-2">
           <LuImport />
@@ -153,6 +179,18 @@ function ImportQuestions({ moduleId }: { moduleId: string }) {
             />
           ))}
         </div>
+
+        {questions.length > 0 && (
+          <div className="mt-3 flex justify-center">
+            <Button
+              className="h-12 w-12 rounded-full p-0 text-xl"
+              onClick={handleLoadMore}
+            >
+              <BsPlus className="h-20 w-20" size={40} />
+            </Button>
+          </div>
+        )}
+
         <DialogFooter>
           <Button
             variant={"destructive"}

@@ -100,8 +100,6 @@ function UpdateQuestionForm({
     return result;
   }
 
-  console.log(initialData);
-
   const handleSubmit = (formData: z.infer<typeof formSchema>) => {
     if (data && data.user) {
       const options = formData.options.map((option: any) => ({
@@ -109,6 +107,8 @@ function UpdateQuestionForm({
         isCorrect: option.isCorrect,
         description: option.description,
       }));
+
+      console.log(options)
 
       const payload = {
         type: formData.questionType as QuestionType,
