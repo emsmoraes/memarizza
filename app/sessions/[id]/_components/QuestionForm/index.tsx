@@ -1,7 +1,7 @@
 "use client";
 import { Prisma } from ".prisma/client";
 import { Button } from "@/app/_components/ui/button";
-import React, { useState } from "react";
+import React from "react";
 import QuestionOption from "../QuestionOption";
 
 interface QuestionFormProps {
@@ -21,16 +21,6 @@ function QuestionForm({
   handleAnswer,
   handleNextQuestion,
 }: QuestionFormProps) {
-  const [selectedSeeDescription, setSelectedSeeDescription] = useState<
-    string | null
-  >(null);
-
-  const toggleSeeDescription = (optionId: string) => {
-    setSelectedSeeDescription((prev) => (prev === optionId ? null : optionId));
-  };
-
-  const isSeeDescription = (optionId: string) =>
-    selectedSeeDescription === optionId;
 
   const handleOptionClick = (optionId: string) => {
     const isMultiple = currentQuestion.type === "MULTIPLE_CHOICE";

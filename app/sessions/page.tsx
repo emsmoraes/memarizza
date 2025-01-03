@@ -1,5 +1,4 @@
 import React, { Suspense } from "react";
-import PageHeader from "../_components/PageHeader";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { db } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
@@ -9,6 +8,7 @@ import { FiPlusCircle } from "react-icons/fi";
 import { Button } from "../_components/ui/button";
 import Link from "next/link";
 import ModuleSessionCard from "./_components/ModuleSessionCard";
+import PageHeader from "../_components/pageHeader";
 
 async function Sessions() {
   const session = await getServerSession(authOptions);

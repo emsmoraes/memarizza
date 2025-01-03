@@ -57,7 +57,7 @@ async function Desktop() {
             </SidebarGroupContent>
           </SidebarGroup>
         ) : (
-          <div className="flex flex-col items-center justify-center mt-10">
+          <div className="flex flex-col items-center justify-center mt-10 group-data-[collapsible=icon]:hidden">
             <Image src={LoginSvg} alt="Login image" width={180}/>
             <h2 className="text-xl mt-6 w-[90%] text-center">Entre para começar os estudos!</h2>
           </div>

@@ -31,6 +31,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
       question: {
         include: {
           options: true,
+          answers: true,
         },
       },
     },
@@ -43,13 +44,15 @@ export default async function SessionPage({ params }: SessionPageProps) {
     (i) => i.isParent,
   );
 
+  console.log(userQuestions)
+
   return (
     <div className="flex flex-col h-full max-h-full">
       <SessionPageHeader
         text={`${parentModule?.module.name} - ${moment(userModuleSession?.createdAt).format("DD/MM/YYYY")}`}
       />
 
-      <ClientPage questions={userQuestions} />
+      <ClientPage questions={userQuestions} sessionId={id}/>
     </div>
   );
 }
