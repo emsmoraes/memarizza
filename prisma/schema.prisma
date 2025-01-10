@@ -87,7 +87,7 @@ model Question {
   moduleId              String
   module                Module                  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   options               Option[]
-  answers               Answer[]
+  answer                Answer?                 @relation("QuestionToAnswer")
   moduleSessionQuestion ModuleSessionQuestion[]
 
   @@map("questions")
@@ -107,10 +107,10 @@ model Option {
 model Answer {
   id         String   @id @default(cuid())
   userId     String
-  questionId String
+  questionId String   @unique
   answer     String
   isCorrect  Boolean
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question   Question @relation("QuestionToAnswer", fields: [questionId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("answers")

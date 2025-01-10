@@ -21,7 +21,6 @@ function QuestionForm({
   handleAnswer,
   handleNextQuestion,
 }: QuestionFormProps) {
-
   const handleOptionClick = (optionId: string) => {
     const isMultiple = currentQuestion.type === "MULTIPLE_CHOICE";
 
@@ -37,7 +36,12 @@ function QuestionForm({
 
   return (
     <div className="flex w-full flex-1 flex-col rounded-2xl bg-accent-foreground/5 p-4">
-      <h1 className="mb-6 text-xl">
+      <h1 className="mb-6 flex items-center gap-2 text-xl">
+        <span className="block text-sm">
+          {currentQuestion.type === "MULTIPLE_CHOICE"
+            ? "(Multipla)"
+            : "(Única)"}
+        </span>
         <div
           className="block [&>img]:h-auto [&>img]:max-w-[400px]"
           dangerouslySetInnerHTML={{ __html: currentQuestion.text }}

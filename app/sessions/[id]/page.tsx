@@ -31,7 +31,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
       question: {
         include: {
           options: true,
-          answers: true,
+          answer: true,
         },
       },
     },
@@ -43,8 +43,6 @@ export default async function SessionPage({ params }: SessionPageProps) {
   const parentModule = userModuleSession?.moduleSessionModules.find(
     (i) => i.isParent,
   );
-
-  console.log(userQuestions)
 
   return (
     <div className="flex flex-col h-full max-h-full">

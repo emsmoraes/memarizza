@@ -11,7 +11,7 @@ export interface Question {
     type: QuestionType;
     module: Module;
     options: Option[];
-    answers: Answer[];
+    answer: Answer;
 }
 
 export interface Module {

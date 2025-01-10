@@ -7,12 +7,13 @@ import QuestionForm from "../QuestionForm";
 import { addOrUpdateAnswersInSession } from "@/app/_services/https/answer-service/answerService";
 import { useSession } from "next-auth/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import SaveIndicator from "../SaveIndicator";
 
 interface ClientPageProps {
   questions: Prisma.QuestionGetPayload<{
     include: {
       options: true;
-      answers: true;
+      answer: true;
     };
   }>[];
   sessionId: string;
@@ -30,9 +31,28 @@ type Action =
       payload: { questionId: string; answers: string[] };
     };
 
-const initialState: State = {
-  currentQuestionIndex: 0,
-  answers: {},
+const mapQuestionsToState = (
+  questions: Prisma.QuestionGetPayload<{
+    include: {
+      options: true;
+      answer: true;
+    };
+  }>[],
+): State => {
+  const answers: Record<string, string[]> = {};
+
+  questions.forEach((question) => {
+    if (question.answer) {
+      const answer = question.answer.answer;
+      answers[question.id] =
+        typeof answer === "string" ? answer.split(",") : [answer];
+    }
+  });
+
+  return {
+    currentQuestionIndex: 0,
+    answers,
+  };
 };
 
 function quizReducer(state: State, action: Action): State {
@@ -56,9 +76,14 @@ function quizReducer(state: State, action: Action): State {
 }
 
 function ClientPage({ questions, sessionId }: ClientPageProps) {
-  const [state, dispatch] = useReducer(quizReducer, initialState);
+  const [state, dispatch] = useReducer(
+    quizReducer,
+    mapQuestionsToState(questions),
+  );
   const [isPending, startTransition] = useTransition();
-  const [saved, setSaved] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | "unsaved">(
+    "saved",
+  );
 
   const { data } = useSession();
 
@@ -78,6 +103,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
   };
 
   const handleAnswer = (questionId: string, answers: string[]) => {
+    setSaveStatus("unsaved");
     dispatch({ type: "ANSWER_QUESTION", payload: { questionId, answers } });
   };
 
@@ -92,9 +118,10 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
 
   const saveProgress = async () => {
     startTransition(async () => {
+      setSaveStatus("saving");
       try {
         await addOrUpdateAnswersInSession(sessionId, user.id, state.answers);
-        setSaved(true);
+        setSaveStatus("saved");
       } catch (error) {
         console.error(error);
       }
@@ -115,20 +142,23 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
             />
           ))}
         </div>
-        <button
-          onClick={saveProgress}
-          className="hover:text-secondary-light flex h-full w-[157px] items-center justify-center gap-2 rounded-2xl bg-foreground p-4 font-medium text-secondary transition duration-300 hover:bg-foreground/90"
-          disabled={isPending}
-        >
-          {isPending ? (
-            <>
-              <AiOutlineLoading3Quarters className="h-5 w-5 animate-spin text-secondary" />
-              Salvando...
-            </>
-          ) : (
-            "Salvar progresso"
-          )}
-        </button>
+        <div className="flex h-full items-center gap-2">
+          <SaveIndicator saveStatus={saveStatus} />
+          <button
+            onClick={saveProgress}
+            className="hover:text-secondary-light flex h-full w-[157px] items-center justify-center gap-2 rounded-2xl bg-foreground p-4 font-medium text-secondary transition duration-300 hover:bg-foreground/90"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <AiOutlineLoading3Quarters className="h-5 w-5 animate-spin text-secondary" />
+                Salvando...
+              </>
+            ) : (
+              "Salvar progresso"
+            )}
+          </button>
+        </div>
       </div>
 
       {currentQuestion && (
