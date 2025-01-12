@@ -35,6 +35,9 @@ export default async function SessionPage({ params }: SessionPageProps) {
         },
       },
     },
+    orderBy: {
+      position: 'asc',
+    },
   });
 
   const userQuestions = userModuleQuestions.map(

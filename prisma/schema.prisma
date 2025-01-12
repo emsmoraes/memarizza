@@ -144,10 +144,12 @@ model ModuleSession {
 }
 
 model ModuleSessionQuestion {
-  id              String  @id @default(cuid())
+  id              String   @id @default(cuid())
   moduleSessionId String
   questionId      String
-  answered        Boolean @default(false)
+  answered        Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  position        Int      @default(0)
 
   moduleSession ModuleSession @relation(fields: [moduleSessionId], references: [id])
   question      Question      @relation(fields: [questionId], references: [id])

@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/app/_components/ui/button";
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { FaPlay } from "react-icons/fa";
 import {
   Tooltip,
@@ -11,16 +11,22 @@ import {
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { createModuleSession } from "@/app/_services/https/module-session-service/moduleSessionService";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface StartModuleSessionProps {
   moduleId: string;
   userId: string;
+  hasSessionInModule: string | null;
 }
 
-function StartModuleSession({ moduleId, userId }: StartModuleSessionProps) {
+function StartModuleSession({ moduleId, userId, hasSessionInModule }: StartModuleSessionProps) {
   const [isPending, startTransition] = useTransition();
+  const navigate = useRouter()
 
   const handleCreateModuleSession = () => {
+    if(hasSessionInModule) {
+      return navigate.push(`/sessions/${hasSessionInModule}`)
+    }
     startTransition(async () => {
       try {
         await createModuleSession(userId, moduleId);

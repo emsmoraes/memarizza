@@ -134,6 +134,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
         <div className="flex w-full flex-1 gap-2 rounded-2xl bg-accent-foreground/5 p-4">
           {questions.map((quest, i) => (
             <QuestionNumberCard
+              currentAnswer={state.answers[quest.id] || []}
               isActive={state.currentQuestionIndex === i}
               id={quest.id}
               position={i + 1}
@@ -167,6 +168,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
           currentAnswer={state.answers[currentQuestion.id] || []}
           handleAnswer={handleAnswer}
           handleNextQuestion={nextQuestion}
+          isLast={state.currentQuestionIndex+1 === questions.length}
         />
       )}
     </div>

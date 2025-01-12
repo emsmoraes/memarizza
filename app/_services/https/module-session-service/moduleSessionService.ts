@@ -50,8 +50,9 @@ export const createModuleSession = async (userId: string, moduleId: string) => {
                     })),
                 },
                 moduleSessionQuestion: {
-                    create: questions.map((question) => ({
+                    create: questions.map((question, index) => ({
                         questionId: question.id,
+                        position: index
                     })),
                 },
             },

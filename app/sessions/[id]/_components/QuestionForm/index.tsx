@@ -3,6 +3,8 @@ import { Prisma } from ".prisma/client";
 import { Button } from "@/app/_components/ui/button";
 import React from "react";
 import QuestionOption from "../QuestionOption";
+import { HiMiniArrowRight } from "react-icons/hi2";
+import { LuCheck } from "react-icons/lu";
 
 interface QuestionFormProps {
   currentQuestion: Prisma.QuestionGetPayload<{
@@ -13,6 +15,7 @@ interface QuestionFormProps {
   currentAnswer: string[];
   handleAnswer: (questionId: string, answers: string[]) => void;
   handleNextQuestion: () => void;
+  isLast: boolean;
 }
 
 function QuestionForm({
@@ -20,6 +23,7 @@ function QuestionForm({
   currentAnswer,
   handleAnswer,
   handleNextQuestion,
+  isLast,
 }: QuestionFormProps) {
   const handleOptionClick = (optionId: string) => {
     const isMultiple = currentQuestion.type === "MULTIPLE_CHOICE";
@@ -61,11 +65,18 @@ function QuestionForm({
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <Button
-          className="h-10 w-10 rounded-full p-0 text-xl"
-          onClick={handleNextQuestion}
-        >
-          &gt;
+        <Button onClick={handleNextQuestion} className="rounded-lg">
+          {isLast ? (
+            <div className="flex items-center gap-2">
+              Finalizar
+              <LuCheck />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              Proxima
+              <HiMiniArrowRight />
+            </div>
+          )}
         </Button>
       </div>
     </div>

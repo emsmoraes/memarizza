@@ -9,6 +9,7 @@ import ModulePageHeader from "../../_components/ModulePageHeader";
 import AddModuleOrQuestionDialog from "../../_components/AddModuleOrQuestionDialog";
 import ListModulesAndQuestions from "../../_components/ListModulesAndQuestions";
 import ImportQuestions from "../../_components/ImportQuestions";
+import StartModuleSession from "../../_components/StartModuleSession";
 
 interface ModuleProps {
   params: {
@@ -43,17 +44,43 @@ async function Module({ params }: ModuleProps) {
     },
   });
 
+  const moduleSession = await db.moduleSession.findMany({
+      where: {
+        moduleSessionModules: {
+          some: {
+            moduleId: currentSubmoduleId,
+          },
+        },
+      },
+      include: {
+        moduleSessionModules: true,
+        moduleSessionQuestion: {
+          include: {
+            question: true,
+          },
+        },
+      },
+    }); 
+
   return (
     <Dialog>
       <ModulePageHeader moduleName={moduleData?.name ?? ""} />
 
-      <div className="flex items-center gap-3">
-        <AddModuleOrQuestionDialog
-          hasModules={childrenModules.length > 0}
-          hasQuestions={childrenQuestions.length > 0}
-          moduleId={currentSubmoduleId}
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-3">
+          <AddModuleOrQuestionDialog
+            hasModules={childrenModules.length > 0}
+            hasQuestions={childrenQuestions.length > 0}
+            moduleId={currentSubmoduleId}
+          />
+          <ImportQuestions moduleId={currentSubmoduleId}/>
+        </div>
+
+        <StartModuleSession
+          moduleId={moduleData?.id ?? ""}
+          userId={session?.user?.id ?? ""}
+          hasSessionInModule={moduleSession?.[0]?.id ?? null}
         />
-        <ImportQuestions moduleId={currentSubmoduleId} />
       </div>
 
       <Suspense

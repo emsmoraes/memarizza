@@ -19,25 +19,44 @@ interface ModuleProps {
 
 async function Module({ params }: ModuleProps) {
   const session = await getServerSession(authOptions);
+  const moduleId = params.id
 
   const moduleData = await db.module.findUnique({
     where: {
-      id: params.id,
+      id: moduleId,
     },
   });
+
+  const moduleSession = await db.moduleSession.findMany({
+    where: {
+      moduleSessionModules: {
+        some: {
+          moduleId,
+        },
+      },
+    },
+    include: {
+      moduleSessionModules: true,
+      moduleSessionQuestion: {
+        include: {
+          question: true,
+        },
+      },
+    },
+  }); 
 
   const childrenModules =
     (await db.module.findMany({
       where: {
         userId: session?.user?.id,
-        parentId: params.id,
+        parentId: moduleId,
       },
     })) ?? [];
 
   const childrenQuestions =
     (await db.question.findMany({
       where: {
-        moduleId: params.id,
+        moduleId: moduleId,
       },
       include: {
         options: true,
@@ -54,14 +73,15 @@ async function Module({ params }: ModuleProps) {
           <AddModuleOrQuestionDialog
             hasModules={childrenModules.length > 0}
             hasQuestions={childrenQuestions.length > 0}
-            moduleId={params.id}
+            moduleId={moduleId}
           />
-          <ImportQuestions moduleId={params.id}/>
+          <ImportQuestions moduleId={moduleId}/>
         </div>
 
         <StartModuleSession
           moduleId={moduleData?.id ?? ""}
           userId={session?.user?.id ?? ""}
+          hasSessionInModule={moduleSession?.[0]?.id ?? null}
         />
       </div>
 
