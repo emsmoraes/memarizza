@@ -20,6 +20,7 @@ import { deleteModuleSession } from "@/app/_services/https/module-session-servic
 import { Prisma } from "@prisma/client";
 import { IoPlayCircleSharp } from "react-icons/io5";
 import moment from "moment";
+import { Progress } from "@/app/_components/ui/progress";
 
 interface ModuleSessionCardProps {
   session: Prisma.ModuleSessionGetPayload<{
@@ -70,12 +71,15 @@ function ModuleSessionCard({ session }: ModuleSessionCardProps) {
             <p className="w-full truncate text-center text-base font-semibold">
               {parentModule.name} {modulesCount > 0 && `+${modulesCount}`}
             </p>
-            <p className="mt-2 line-clamp-2 w-full text-center text-xs">
+            <p className="mt-1 line-clamp-2 w-full text-center text-xs">
               Criado em {moment(session.createdAt).format("DD/MM/YYYY")}
             </p>
-            <p className="mt-2 line-clamp-2 w-full text-center text-xs">
-              Atualizado em {moment(session.updatedAt).format("DD/MM/YYYY")}
-            </p>
+            <div className="mt-4">
+              <Progress value={session.progress} />
+              <p className="mt-2 line-clamp-2 w-full text-center text-xs">
+                {session.progress}%
+              </p>
+            </div>
           </div>
 
           <DialogTrigger

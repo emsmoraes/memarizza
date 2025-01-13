@@ -2,6 +2,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export const addOrUpdateAnswersInSession = async (
   sessionId: string,
@@ -83,5 +84,30 @@ export const addOrUpdateAnswersInSession = async (
     });
 
     await Promise.all(updates);
+
+    const totalQuestions = await prisma.moduleSessionQuestion.count({
+      where: {
+        moduleSessionId: sessionId,
+      },
+    });
+
+    const answeredQuestions = await prisma.moduleSessionQuestion.count({
+      where: {
+        moduleSessionId: sessionId,
+        answered: true,
+      },
+    });
+
+    const progress = (answeredQuestions / totalQuestions) * 100;
+
+    await prisma.moduleSession.update({
+      where: {
+        id: sessionId,
+      },
+      data: {
+        progress,
+      },
+    });
   });
+  revalidatePath("/sessions");
 };

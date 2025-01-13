@@ -147,8 +147,8 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
           <SaveIndicator saveStatus={saveStatus} />
           <button
             onClick={saveProgress}
-            className="hover:text-secondary-light flex h-full w-[157px] items-center justify-center gap-2 rounded-2xl bg-foreground p-4 font-medium text-secondary transition duration-300 hover:bg-foreground/90"
-            disabled={isPending}
+            className="hover:text-secondary-light flex h-full w-[157px] items-center justify-center gap-2 rounded-2xl bg-foreground p-4 font-medium text-secondary transition duration-300 hover:bg-foreground/90 disabled:bg-foreground/60"
+            disabled={saveStatus !== "unsaved"}
           >
             {isPending ? (
               <>

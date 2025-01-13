@@ -50,7 +50,8 @@ function QuestionOption({
           </span>
         </div>
         <button
-          className="absolute right-4 top-4"
+        disabled={!option.description}
+          className="absolute right-4 top-4 disabled:text-zinc-500"
           onClick={(e) => {
             e.stopPropagation();
             toggleDescription();
@@ -60,7 +61,7 @@ function QuestionOption({
         </button>
         {openDescription && (
           <div className="mt-8 flex w-full items-center justify-center rounded-md border border-solid border-foreground px-2 py-4">
-            Vendo mais dessa
+            {option.description}
           </div>
         )}
       </div>
