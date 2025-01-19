@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { FiBook, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import styles from "./styles.module.css";
 import {
   Dialog,
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { usePathname, useRouter } from "next/navigation";
 import { removeModule } from "@/app/_services/https/module-service/moduleService";
+import { IoFolderOutline } from "react-icons/io5";
 
 interface ModuleCardProps {
   module: {
@@ -56,17 +57,18 @@ function ModuleCard({ module }: ModuleCardProps) {
       <div onClick={handleNavigate}>
         <div
           key={module.id}
-          className={`${styles.glassEffect} group relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
+          className={`${styles.glassEffect} group relative flex cursor-pointer items-center gap-2 rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
         >
           <div className="text-center">
-            <FiBook className="text-2xl" />
+            <IoFolderOutline className="text-2xl" />
           </div>
-          <div className="mt-2">
-            <p className="w-full truncate text-center text-base font-semibold">
+          <div>
+            <p className="w-full truncate text-base font-semibold">
               {module.name}
             </p>
-            <p className="line-clamp-2 w-full text-center text-sm">
-              {module.description}
+            <p className="line-clamp-1 w-full text-[12px]">
+              {module.description} desx qwf qwfqw fqw fqw fqw fqw fqwf qwf qwf
+              qwf qwf qwf qwf qwf qwf qwf qwf
             </p>
           </div>
 

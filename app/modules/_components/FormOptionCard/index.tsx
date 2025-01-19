@@ -72,13 +72,15 @@ function FormOptionCard({
     setOpenAccordion(false);
   };
 
-  const triggerClassName = cn("bg-zinc-100/10 rounded-lg px-4 outline-none", {
+  const triggerClassName = cn("bg-zinc-100/10 rounded-lg px-4 outline-none rounded-t-lg pb-2 [&[data-state=open]]:rounded-b-none", {
     "bg-red-600/50 hover:bg-red-500/50": !!error,
     "hover:bg-zinc-100/10": !error,
   });
 
   const toggleCorrect = () => {
     const options = getValues("options");
+
+    console.log(options)
 
     if (questionType === "SINGLE_CHOICE") {
       const updatedOptions = options.map((opt: any) => ({
@@ -151,7 +153,6 @@ function FormOptionCard({
             <AccordionTrigger
               className={cn(
                 triggerClassName,
-                "rounded-t-lg pb-2 [&[data-state=open]]:rounded-b-none",
               )}
             >
               <div className="mr-2" {...provided.dragHandleProps}>

@@ -9,6 +9,7 @@ export const addQuestion = async (
     data: Prisma.QuestionCreateInput,
     moduleId: string
 ) => {
+    console.log(data)
     try {
         const foundModule = await db.module.findUnique({
             where: { id: moduleId },
