@@ -77,7 +77,7 @@ function ModuleSessionCard({ session }: ModuleSessionCardProps) {
             <div className="mt-4">
               <Progress value={session.progress} />
               <p className="mt-2 line-clamp-2 w-full text-center text-xs">
-                {session.progress}%
+                {Number(session.progress).toFixed(2)}%
               </p>
             </div>
           </div>

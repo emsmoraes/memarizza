@@ -1,5 +1,4 @@
 "use client";
-import { Session } from "next-auth";
 import React, { useState, useTransition } from "react";
 import { formSchema } from "./schema";
 import { z } from "zod";
@@ -17,6 +16,8 @@ import { Button } from "@/app/_components/ui/button";
 import { callOpenAI } from "@/app/_services/https/open-ia-service/openIaService";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
+import { addQuestions } from "@/app/_services/https/question-service/questionService";
+import { toast } from "sonner";
 
 type Option = {
   description?: string | null;
@@ -25,31 +26,31 @@ type Option = {
 };
 
 type Question = {
-  questionTitle: string;
-  questionType: "MULTIPLE_CHOICE" | "SINGLE_CHOICE";
+  text: string;
+  type: "MULTIPLE_CHOICE" | "SINGLE_CHOICE";
   options: Option[];
 };
 
 interface QuestionFormIAProps {
   moduleId: string;
-  data: Session | null;
   setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function QuestionFormIA({
-  data,
   moduleId,
   setIsOpenDialog,
 }: QuestionFormIAProps) {
   const [isPending, startTransition] = useTransition();
+  const [isPendingAdd, startTransitionAdd] = useTransition();
   const [questions, setQuestions] = useState<Question[]>([]);
+
   const handleSubmit = (formData: z.infer<typeof formSchema>) => {
     startTransition(() => {
       callOpenAI(`usando esse prompt: "${formData.prompt}". Gere um array de questões no formato JSON válido. Cada questão deve seguir exatamente este padrão:
         [
           {
-            "questionTitle": "titulo aqui",
-            "questionType": "SINGLE_CHOICE" ou "MULTIPLE_CHOICE",
+            "text": "titulo aqui",
+            "type": "SINGLE_CHOICE" ou "MULTIPLE_CHOICE",
             "options": [
               {
                 "text": "texto da opcao",
@@ -93,6 +94,18 @@ function QuestionFormIA({
 
   const removeQuestion = (index: number) => {
     setQuestions((olds) => olds.filter((_, i) => i !== index));
+  };
+
+  const handleAddQuestions = () => {
+    startTransitionAdd(async () => {
+      try {
+        await addQuestions(questions, moduleId);
+        setIsOpenDialog(false);
+        toast("Questões adicionadas com sucesso!");
+      } catch (e) {
+        console.log(e);
+      }
+    });
   };
 
   return (
@@ -141,11 +154,11 @@ function QuestionFormIA({
       <div className="mt-6 space-y-2">
         {questions.map((question, index) => (
           <div
-            key={question.questionTitle + index}
-            className="flex items-center justify-between rounded-lg rounded-t-lg bg-zinc-400/10 px-4 py-2 outline-none hover:bg-zinc-100/10 [&[data-state=open]]:rounded-b-none"
+            key={question.text + index}
+            className="flex items-center justify-between gap-2 rounded-lg rounded-t-lg bg-zinc-400/10 px-4 py-2 outline-none hover:bg-zinc-100/10 [&[data-state=open]]:rounded-b-none"
           >
             <h2>
-              {index + 1} - {question.questionTitle}
+              {index + 1} - {question.text}
             </h2>
             <Button onClick={() => removeQuestion(index)}>
               <IoClose />
@@ -154,7 +167,24 @@ function QuestionFormIA({
         ))}
       </div>
 
-      <Button className="mt-3">Adicionar</Button>
+      <div className="mt-3 flex items-center justify-end">
+        <Button
+          disabled={isPendingAdd || questions.length === 0}
+          className="flex w-full items-center justify-center"
+          onClick={handleAddQuestions}
+        >
+          {isPendingAdd ? (
+            <AiOutlineLoading3Quarters
+              size={24}
+              color="inherit"
+              className="animate-spin"
+            />
+          ) : (
+            "Adicionar"
+          )}
+          {isPendingAdd && " Adicionando..."}
+        </Button>
+      </div>
     </>
   );
 }

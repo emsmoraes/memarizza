@@ -30,7 +30,7 @@ function QuestionNumberCard({
     >
       {position}
       {currentAnswer.length > 0 && (
-        <IoCheckmarkCircle className="absolute -bottom-1 -right-1 text-xl text-green-500 shadow-md" />
+        <IoCheckmarkCircle className="absolute -bottom-1 -right-1 text-xl text-green-500" />
       )}
     </Button>
   );

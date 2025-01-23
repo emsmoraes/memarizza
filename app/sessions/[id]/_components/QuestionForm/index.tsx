@@ -52,7 +52,7 @@ function QuestionForm({
         />
       </h1>
 
-      <div className="space-y-3">
+      <div className="space-y-5">
         {currentQuestion.options.map((option, i) => (
           <QuestionOption
             currentAnswer={currentAnswer}
@@ -65,14 +65,14 @@ function QuestionForm({
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <Button onClick={handleNextQuestion} className="rounded-lg">
+        <Button onClick={handleNextQuestion} className="hover:text-secondary-light flex h-full w-[157px] items-center justify-center gap-2 rounded-2xl bg-foreground p-4 font-medium text-secondary transition duration-300 hover:bg-foreground/90 disabled:bg-foreground/60 [&_svg]:size-6">
           {isLast ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-[17px]">
               Finalizar
               <LuCheck />
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-[17px]">
               Proxima
               <HiMiniArrowRight />
             </div>

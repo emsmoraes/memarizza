@@ -40,13 +40,13 @@ function QuestionOption({
       <div className="flex min-h-full justify-center rounded-l-xl border-r-2 border-solid border-background px-5">
         <span className="my-4 block text-2xl font-semibold">{ALPHABET[index]}</span>
       </div>
-      <div className="w-full px-3 py-4">
+      <div className="w-full px-3 py-4 pr-10">
         <div className="flex w-full gap-3">
           <span className="block">
             <div
-              className="block [&>img]:h-auto [&>img]:max-w-[400px]"
+              className="block [&>img]:h-auto [&>img]:max-w-[400px] text-lg"
               dangerouslySetInnerHTML={{ __html: option.text }}
-            />
+            /> 
           </span>
         </div>
         <button

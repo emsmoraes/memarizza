@@ -37,7 +37,6 @@ function QuestionForm({ data, setIsOpenDialog, moduleId }: QuestionFormProps) {
     ),
     IA: (
       <QuestionFormIA
-        data={data}
         moduleId={moduleId}
         setIsOpenDialog={setIsOpenDialog}
       />
