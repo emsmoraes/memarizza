@@ -1,4 +1,3 @@
-
 "use server";
 
 import { db } from "@/lib/prisma";
@@ -7,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export const addOrUpdateAnswersInSession = async (
   sessionId: string,
   userId: string,
-  answers: Record<string, string[]>
+  answers: Record<string, string[]>,
 ) => {
   await db.$transaction(async (prisma) => {
     const sessionQuestions = await prisma.moduleSessionQuestion.findMany({
@@ -25,63 +24,83 @@ export const addOrUpdateAnswersInSession = async (
     });
 
     if (!sessionQuestions.length) {
-      throw new Error("Nenhuma das questões fornecidas está associada a essa sessão.");
+      throw new Error(
+        "Nenhuma das questões fornecidas está associada a essa sessão.",
+      );
     }
 
-    const updates = Object.entries(answers).map(async ([questionId, answerIds]) => {
-      const sessionQuestion = sessionQuestions.find(
-        (q) => q.questionId === questionId
-      );
+    const updates = Object.entries(answers).map(
+      async ([questionId, answerIds]) => {
+        const sessionQuestion = sessionQuestions.find(
+          (q) => q.questionId === questionId,
+        );
 
-      if (!sessionQuestion) {
-        throw new Error(`A questão ${questionId} não está associada a essa sessão.`);
-      }
+        if (!sessionQuestion) {
+          throw new Error(
+            `A questão ${questionId} não está associada a essa sessão.`,
+          );
+        }
 
-      const correctAnswers = sessionQuestion.question.options
-        .filter((option) => option.isCorrect)
-        .map((option) => option.id);
+        if (answerIds.length === 1 && answerIds[0] === "") {
+          await prisma.answer.deleteMany({
+            where: {
+              questionId: questionId,
+            },
+          });
 
-      const isCorrect =
-        answerIds.every((id) => correctAnswers.includes(id)) &&
-        correctAnswers.length === answerIds.length;
+          return;
+        }
 
-      const existingAnswer = await prisma.answer.findFirst({
-        where: {
-          questionId,
-          userId,
-        },
-      });
+        const correctAnswers = sessionQuestion.question.options
+          .filter((option) => option.isCorrect)
+          .map((option) => option.id);
 
-      if (existingAnswer) {
-        await prisma.answer.update({
+        const isCorrect =
+          answerIds.every((id) => correctAnswers.includes(id)) &&
+          correctAnswers.length === answerIds.length;
+
+        const existingAnswer = await prisma.answer.findFirst({
           where: {
-            id: existingAnswer.id,
-          },
-          data: {
-            answer: answerIds.join(","),
-            isCorrect,
-          },
-        });
-      } else {
-        await prisma.answer.create({
-          data: {
-            userId,
             questionId,
-            answer: answerIds.join(","),
-            isCorrect,
+            userId,
           },
         });
-      }
 
-      await prisma.moduleSessionQuestion.update({
-        where: {
-          id: sessionQuestion.id,
-        },
-        data: {
-          answered: true,
-        },
-      });
-    });
+        if (existingAnswer) {
+          await prisma.answer.update({
+            where: {
+              id: existingAnswer.id,
+            },
+            data: {
+              answer: answerIds.join(","),
+              isCorrect,
+            },
+          });
+        } else if (answerIds.length > 0) {
+          const validAnswers = answerIds.filter((id) => id.trim() !== "");
+
+          if (validAnswers.length > 0) {
+            await prisma.answer.create({
+              data: {
+                userId,
+                questionId,
+                answer: validAnswers.join(","),
+                isCorrect,
+              },
+            });
+          }
+        }
+
+        await prisma.moduleSessionQuestion.update({
+          where: {
+            id: sessionQuestion.id,
+          },
+          data: {
+            answered: true,
+          },
+        });
+      },
+    );
 
     await Promise.all(updates);
 

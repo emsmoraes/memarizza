@@ -18,7 +18,8 @@ function QuestionNumberCard({
   onClick,
   currentAnswer,
 }: QuestionNumberCardProps) {
-  console.log(currentAnswer)
+  const validAnswer = currentAnswer.filter((answer) => answer !== "");
+  console.log(validAnswer)
   return (
     <Button
       onClick={() => onClick(id)}
@@ -29,7 +30,7 @@ function QuestionNumberCard({
       )}
     >
       {position}
-      {currentAnswer.length > 0 && (
+      {validAnswer.length > 0 && (
         <IoCheckmarkCircle className="absolute -bottom-1 -right-1 text-xl text-green-500" />
       )}
     </Button>
