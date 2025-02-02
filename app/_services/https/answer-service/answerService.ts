@@ -19,8 +19,6 @@ const updateModuleSessionProgress = async (
   const progress =
     totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
 
-  console.log(progress);
-
   await prisma.moduleSession.update({
     where: {
       id: sessionId,

@@ -15,9 +15,10 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { removeModule } from "@/app/_services/https/module-service/moduleService";
 import { IoFolderOutline } from "react-icons/io5";
+import Link from "next/link";
 
 interface ModuleCardProps {
   module: {
@@ -31,12 +32,7 @@ interface ModuleCardProps {
 
 function ModuleCard({ module }: ModuleCardProps) {
   const [deletingModule, setDeletingModule] = useState(false);
-  const router = useRouter();
   const pathname = usePathname();
-
-  const handleNavigate = () => {
-    router.push(`${pathname}/${module.id}`);
-  };
 
   const handleDeleteModule = async () => {
     setDeletingModule(true);
@@ -54,7 +50,7 @@ function ModuleCard({ module }: ModuleCardProps) {
 
   return (
     <Dialog>
-      <div onClick={handleNavigate}>
+      <Link href={`${pathname}/${module.id}`}>
         <div
           key={module.id}
           className={`${styles.glassEffect} group relative flex cursor-pointer items-center gap-2 rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
@@ -88,7 +84,7 @@ function ModuleCard({ module }: ModuleCardProps) {
             </button>
           </DialogTrigger>
         </div>
-      </div>
+      </Link>
 
       <DialogContent>
         <DialogHeader>
