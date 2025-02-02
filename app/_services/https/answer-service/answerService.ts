@@ -2,6 +2,36 @@
 
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+const updateModuleSessionProgress = async (
+  sessionId: string,
+  answeredQuestions: number,
+): Promise<void> => {
+  const totalQuestions = await prisma.moduleSessionQuestion.count({
+    where: {
+      moduleSessionId: sessionId,
+    },
+  });
+
+  const progress =
+    totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+
+  console.log(progress);
+
+  await prisma.moduleSession.update({
+    where: {
+      id: sessionId,
+    },
+    data: {
+      progress,
+    },
+  });
+
+  revalidatePath("/sessions");
+};
 
 export const addOrUpdateAnswersInSession = async (
   sessionId: string,
@@ -23,12 +53,6 @@ export const addOrUpdateAnswersInSession = async (
       },
     });
 
-    if (!sessionQuestions.length) {
-      throw new Error(
-        "Nenhuma das questões fornecidas está associada a essa sessão.",
-      );
-    }
-
     const updates = Object.entries(answers).map(
       async ([questionId, answerIds]) => {
         const sessionQuestion = sessionQuestions.find(
@@ -41,12 +65,34 @@ export const addOrUpdateAnswersInSession = async (
           );
         }
 
-        if (answerIds.length === 1 && answerIds[0] === "") {
+        if (
+          (answerIds.length === 1 && answerIds[0] === "") ||
+          answerIds.length === 0
+        ) {
+          await prisma.moduleSessionQuestion.update({
+            where: {
+              id: sessionQuestion.id,
+              questionId: questionId,
+            },
+            data: {
+              answered: false,
+            },
+          });
+
           await prisma.answer.deleteMany({
             where: {
               questionId: questionId,
             },
           });
+
+          const answeredQuestions = await prisma.moduleSessionQuestion.count({
+            where: {
+              moduleSessionId: sessionId,
+              answered: true,
+            },
+          });
+
+          await updateModuleSessionProgress(sessionId, answeredQuestions);
 
           return;
         }
@@ -94,6 +140,7 @@ export const addOrUpdateAnswersInSession = async (
         await prisma.moduleSessionQuestion.update({
           where: {
             id: sessionQuestion.id,
+            questionId: questionId,
           },
           data: {
             answered: true,
@@ -104,12 +151,6 @@ export const addOrUpdateAnswersInSession = async (
 
     await Promise.all(updates);
 
-    const totalQuestions = await prisma.moduleSessionQuestion.count({
-      where: {
-        moduleSessionId: sessionId,
-      },
-    });
-
     const answeredQuestions = await prisma.moduleSessionQuestion.count({
       where: {
         moduleSessionId: sessionId,
@@ -117,16 +158,6 @@ export const addOrUpdateAnswersInSession = async (
       },
     });
 
-    const progress = (answeredQuestions / totalQuestions) * 100;
-
-    await prisma.moduleSession.update({
-      where: {
-        id: sessionId,
-      },
-      data: {
-        progress,
-      },
-    });
+    await updateModuleSessionProgress(sessionId, answeredQuestions);
   });
-  revalidatePath("/sessions");
 };
