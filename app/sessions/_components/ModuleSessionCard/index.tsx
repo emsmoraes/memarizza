@@ -15,12 +15,12 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useRouter } from "next/navigation";
 import { deleteModuleSession } from "@/app/_services/https/module-session-service/moduleSessionService";
 import { Prisma } from "@prisma/client";
 import { IoPlayCircleSharp } from "react-icons/io5";
 import moment from "moment";
 import { Progress } from "@/app/_components/ui/progress";
+import Link from "next/link";
 
 interface ModuleSessionCardProps {
   session: Prisma.ModuleSessionGetPayload<{
@@ -35,12 +35,7 @@ interface ModuleSessionCardProps {
 }
 
 function ModuleSessionCard({ session }: ModuleSessionCardProps) {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
-  const handleNavigate = () => {
-    router.push(`sessions/${session.id}`);
-  };
 
   const handleDeleteModuleSession = () => {
     startTransition(async () => {
@@ -59,7 +54,7 @@ function ModuleSessionCard({ session }: ModuleSessionCardProps) {
 
   return (
     <Dialog>
-      <div onClick={handleNavigate}>
+      <Link href={`/sessions/${session.id}`}>
         <div
           key={module.id}
           className={`${styles.glassEffect} group relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg p-4 shadow-lg transition-all duration-200 hover:scale-105`}
@@ -98,7 +93,7 @@ function ModuleSessionCard({ session }: ModuleSessionCardProps) {
             </button>
           </DialogTrigger>
         </div>
-      </div>
+      </Link>
 
       <DialogContent>
         <DialogHeader>
