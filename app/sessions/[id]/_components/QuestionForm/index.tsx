@@ -16,6 +16,7 @@ interface QuestionFormProps {
   handleAnswer: (questionId: string, answers: string[]) => void;
   handleNextQuestion: () => void;
   isLast: boolean;
+  position: number;
 }
 
 function QuestionForm({
@@ -24,6 +25,7 @@ function QuestionForm({
   handleAnswer,
   handleNextQuestion,
   isLast,
+  position
 }: QuestionFormProps) {
   const handleOptionClick = (optionId: string) => {
     const isMultiple = currentQuestion.type === "MULTIPLE_CHOICE";
@@ -41,10 +43,11 @@ function QuestionForm({
   return (
     <div className="flex w-full flex-1 flex-col rounded-2xl bg-accent-foreground/5 p-4">
       <h1 className="mb-6 flex items-center gap-2 text-xl">
-        <span className="block text-sm">
+      {position}
+        <span className="block text-xs">
           {currentQuestion.type === "MULTIPLE_CHOICE"
             ? "(Multipla)"
-            : "(Única)"}
+            : "(Única)"} -
         </span>
         <div
           className="block [&>img]:h-auto [&>img]:max-w-[400px]"

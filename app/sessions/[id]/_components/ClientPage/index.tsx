@@ -169,6 +169,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
           handleAnswer={handleAnswer}
           handleNextQuestion={nextQuestion}
           isLast={state.currentQuestionIndex+1 === questions.length}
+          position={state.currentQuestionIndex+1}
         />
       )}
     </div>
