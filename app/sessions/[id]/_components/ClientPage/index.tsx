@@ -8,6 +8,7 @@ import { addOrUpdateAnswersInSession } from "@/app/_services/https/answer-servic
 import { useSession } from "next-auth/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import SaveIndicator from "../SaveIndicator";
+import SessionConfig from "../SessionConfig";
 
 interface ClientPageProps {
   questions: Prisma.QuestionGetPayload<{
@@ -159,6 +160,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
               "Salvar progresso"
             )}
           </button>
+            <SessionConfig />
         </div>
       </div>
 
