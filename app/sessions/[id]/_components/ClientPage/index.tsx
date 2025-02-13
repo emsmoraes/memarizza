@@ -23,6 +23,7 @@ interface ClientPageProps {
 type State = {
   currentQuestionIndex: number;
   answers: Record<string, string[]>;
+  revealed: Record<string, boolean>;
 };
 
 type Action =
@@ -30,6 +31,10 @@ type Action =
   | {
       type: "ANSWER_QUESTION";
       payload: { questionId: string; answers: string[] };
+    }
+  | {
+      type: "SET_QUESTION_REVEAL";
+      payload: { questionId: string; reveal: boolean };
     };
 
 const mapQuestionsToState = (
@@ -41,6 +46,7 @@ const mapQuestionsToState = (
   }>[],
 ): State => {
   const answers: Record<string, string[]> = {};
+  const revealed: Record<string, boolean> = {};
 
   questions.forEach((question) => {
     if (question.answer) {
@@ -48,11 +54,14 @@ const mapQuestionsToState = (
       answers[question.id] =
         typeof answer === "string" ? answer.split(",") : [answer];
     }
+
+    revealed[question.id] = false;
   });
 
   return {
     currentQuestionIndex: 0,
     answers,
+    revealed,
   };
 };
 
@@ -69,6 +78,14 @@ function quizReducer(state: State, action: Action): State {
         answers: {
           ...state.answers,
           [action.payload.questionId]: action.payload.answers,
+        },
+      };
+    case "SET_QUESTION_REVEAL":
+      return {
+        ...state,
+        revealed: {
+          ...state.revealed,
+          [action.payload.questionId]: action.payload.reveal,
         },
       };
     default:
@@ -129,6 +146,16 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
     });
   };
 
+  const toggleReveal = (questionId: string) => {
+    dispatch({
+      type: "SET_QUESTION_REVEAL",
+      payload: {
+        questionId,
+        reveal: !state.revealed[questionId],
+      },
+    });
+  };
+
   return (
     <div className="flex h-full flex-1 flex-col">
       <div className="mb-3 flex items-center gap-2">
@@ -160,7 +187,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
               "Salvar progresso"
             )}
           </button>
-            <SessionConfig />
+          <SessionConfig />
         </div>
       </div>
 
@@ -170,8 +197,10 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
           currentAnswer={state.answers[currentQuestion.id] || []}
           handleAnswer={handleAnswer}
           handleNextQuestion={nextQuestion}
-          isLast={state.currentQuestionIndex+1 === questions.length}
-          position={state.currentQuestionIndex+1}
+          isLast={state.currentQuestionIndex + 1 === questions.length}
+          position={state.currentQuestionIndex + 1}
+          isRevealed={state.revealed[currentQuestion.id] || false}
+          toggleReveal={() => toggleReveal(currentQuestion.id)}
         />
       )}
     </div>

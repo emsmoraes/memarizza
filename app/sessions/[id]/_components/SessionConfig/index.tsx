@@ -9,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/app/_components/ui/sheet";
 import { Separator } from "@/app/_components/ui/separator";
+import { Switch } from "@/app/_components/ui/switch";
 
 function SessionConfig() {
   return (
@@ -28,6 +29,12 @@ function SessionConfig() {
           </SheetDescription>
         </SheetHeader>
         <Separator className="my-5" />
+        <div className="flex flex-col gap-2 px-5">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Revelar todas</span>
+            <Switch />
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

@@ -14,13 +14,15 @@ interface QuestionOptionProps {
   handleOptionClick: (optionId: string) => void;
   currentAnswer: string[];
   index: number;
+  isRevealed: boolean;
 }
 
 function QuestionOption({
   option,
   handleOptionClick,
   currentAnswer,
-  index
+  index,
+  isRevealed,
 }: QuestionOptionProps) {
   const [openDescription, setOpenDescription] = useState(false);
 
@@ -31,26 +33,30 @@ function QuestionOption({
     <div
       key={option.id}
       onClick={() => handleOptionClick(option.id)}
-      className={`relative flex w-full cursor-pointer gap-2 rounded-xl border border-solid ${
-        currentAnswer.includes(option.id)
-          ? "border-foreground bg-muted-foreground/30"
-          : "bg-muted-foreground/20 duration-200 hover:bg-foreground/15"
+      className={`relative flex w-full cursor-pointer gap-2 rounded-xl border border-solid duration-200 ${
+        isRevealed
+          ? `${currentAnswer.includes(option.id) ? "border-foreground" : "border-transparent"} bg-green-400/50`
+          : currentAnswer.includes(option.id)
+            ? "border-foreground bg-muted-foreground/30"
+            : "bg-muted-foreground/20 hover:bg-foreground/15"
       }`}
     >
       <div className="flex min-h-full justify-center rounded-l-xl border-r-2 border-solid border-background px-5">
-        <span className="my-4 block text-2xl font-semibold">{ALPHABET[index]}</span>
+        <span className="my-4 block text-2xl font-semibold">
+          {ALPHABET[index]}
+        </span>
       </div>
       <div className="w-full px-3 py-4 pr-10">
         <div className="flex w-full gap-3">
           <span className="block">
             <div
-              className="block [&>img]:h-auto [&>img]:max-w-[400px] text-lg"
+              className="block text-lg [&>img]:h-auto [&>img]:max-w-[400px]"
               dangerouslySetInnerHTML={{ __html: option.text }}
-            /> 
+            />
           </span>
         </div>
         <button
-        disabled={!option.description}
+          disabled={!option.description}
           className="absolute right-4 top-4 disabled:text-zinc-500"
           onClick={(e) => {
             e.stopPropagation();
