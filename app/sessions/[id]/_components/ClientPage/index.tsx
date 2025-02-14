@@ -9,6 +9,8 @@ import { useSession } from "next-auth/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import SaveIndicator from "../SaveIndicator";
 import SessionConfig from "../SessionConfig";
+import { quizReducer } from "@/app/store/quizReducer";
+import { mapQuestionsToState } from "../../utils/formatQuestions";
 
 interface ClientPageProps {
   questions: Prisma.QuestionGetPayload<{
@@ -18,94 +20,6 @@ interface ClientPageProps {
     };
   }>[];
   sessionId: string;
-}
-
-type State = {
-  currentQuestionIndex: number;
-  answers: Record<string, string[]>;
-  revealed: Record<string, boolean>;
-};
-
-type Action =
-  | { type: "SET_CURRENT_QUESTION"; payload: number }
-  | {
-      type: "ANSWER_QUESTION";
-      payload: { questionId: string; answers: string[] };
-    }
-  | {
-      type: "SET_QUESTION_REVEAL";
-      payload: { questionId: string; reveal: boolean };
-    }
-  | { type: "SET_ALL_QUESTIONS_REVEAL"; payload: { reveal: boolean } };
-
-const mapQuestionsToState = (
-  questions: Prisma.QuestionGetPayload<{
-    include: {
-      options: true;
-      answer: true;
-    };
-  }>[],
-): State => {
-  const answers: Record<string, string[]> = {};
-  const revealed: Record<string, boolean> = {};
-
-  questions.forEach((question) => {
-    if (question.answer) {
-      const answer = question.answer.answer;
-      answers[question.id] =
-        typeof answer === "string" ? answer.split(",") : [answer];
-    }
-
-    revealed[question.id] = false;
-  });
-
-  return {
-    currentQuestionIndex: 0,
-    answers,
-    revealed,
-  };
-};
-
-function quizReducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "SET_CURRENT_QUESTION":
-      return {
-        ...state,
-        currentQuestionIndex: action.payload,
-      };
-    case "ANSWER_QUESTION":
-      return {
-        ...state,
-        answers: {
-          ...state.answers,
-          [action.payload.questionId]: action.payload.answers,
-        },
-      };
-    case "SET_QUESTION_REVEAL":
-      return {
-        ...state,
-        revealed: {
-          ...state.revealed,
-          [action.payload.questionId]: action.payload.reveal,
-        },
-      };
-    case "SET_ALL_QUESTIONS_REVEAL": {
-      const { reveal } = action.payload;
-      const updatedRevealed = Object.keys(state.revealed).reduce(
-        (acc, questionId) => {
-          acc[questionId] = reveal;
-          return acc;
-        },
-        {} as Record<string, boolean>,
-      );
-      return {
-        ...state,
-        revealed: updatedRevealed,
-      };
-    }
-    default:
-      return state;
-  }
 }
 
 function ClientPage({ questions, sessionId }: ClientPageProps) {
@@ -170,6 +84,11 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
     });
   };
 
+  const clearAllAnswers = () => {
+    setSaveStatus("unsaved");
+    dispatch({ type: "CLEAR_ALL_ANSWERS" });
+  };
+
   return (
     <div className="flex h-full flex-1 flex-col">
       <div className="mb-3 flex items-center gap-2">
@@ -185,6 +104,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
             />
           ))}
         </div>
+        <button onClick={clearAllAnswers}>clearAllAnswers</button>
         <div className="flex h-full items-center gap-2">
           <SaveIndicator saveStatus={saveStatus} />
           <button
