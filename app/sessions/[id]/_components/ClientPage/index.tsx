@@ -35,7 +35,8 @@ type Action =
   | {
       type: "SET_QUESTION_REVEAL";
       payload: { questionId: string; reveal: boolean };
-    };
+    }
+  | { type: "SET_ALL_QUESTIONS_REVEAL"; payload: { reveal: boolean } };
 
 const mapQuestionsToState = (
   questions: Prisma.QuestionGetPayload<{
@@ -88,6 +89,20 @@ function quizReducer(state: State, action: Action): State {
           [action.payload.questionId]: action.payload.reveal,
         },
       };
+    case "SET_ALL_QUESTIONS_REVEAL": {
+      const { reveal } = action.payload;
+      const updatedRevealed = Object.keys(state.revealed).reduce(
+        (acc, questionId) => {
+          acc[questionId] = reveal;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      );
+      return {
+        ...state,
+        revealed: updatedRevealed,
+      };
+    }
     default:
       return state;
   }
@@ -102,9 +117,8 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | "unsaved">(
     "saved",
   );
-
+  const allRevealed = Object.values(state.revealed).every(Boolean);
   const { data } = useSession();
-
   const user = data?.user;
 
   if (!user) {
@@ -187,7 +201,15 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
               "Salvar progresso"
             )}
           </button>
-          <SessionConfig />
+          <SessionConfig
+            allRevealed={allRevealed}
+            toggleAllReveal={(reveal: boolean) =>
+              dispatch({
+                type: "SET_ALL_QUESTIONS_REVEAL",
+                payload: { reveal },
+              })
+            }
+          />
         </div>
       </div>
 

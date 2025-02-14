@@ -1,7 +1,9 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { LuSettings } from "react-icons/lu";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -10,8 +12,20 @@ import {
 } from "@/app/_components/ui/sheet";
 import { Separator } from "@/app/_components/ui/separator";
 import { Switch } from "@/app/_components/ui/switch";
+import { Button } from "@/app/_components/ui/button";
 
-function SessionConfig() {
+interface SessionConfigProps {
+  toggleAllReveal: (reveal: boolean) => void;
+  allRevealed: boolean;
+}
+
+function SessionConfig({ toggleAllReveal, allRevealed }: SessionConfigProps) {
+  const [isRevealAll, setIsRevealAll] = useState(allRevealed);
+
+  const saveConfig = () => {
+    toggleAllReveal(isRevealAll);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -20,7 +34,7 @@ function SessionConfig() {
         </button>
       </SheetTrigger>
 
-      <SheetContent className="rounded-l-lg px-0">
+      <SheetContent className="flex flex-col rounded-l-lg px-0">
         <SheetHeader className="px-5">
           <SheetTitle>Configurar sessão</SheetTitle>
           <SheetDescription>
@@ -29,11 +43,18 @@ function SessionConfig() {
           </SheetDescription>
         </SheetHeader>
         <Separator className="my-5" />
-        <div className="flex flex-col gap-2 px-5">
+        <div className="flex flex-1 flex-col gap-2 px-5">
           <div className="flex items-center justify-between">
             <span className="font-semibold">Revelar todas</span>
-            <Switch />
+            <Switch onCheckedChange={setIsRevealAll} checked={isRevealAll} />
           </div>
+        </div>
+        <div className="px-2">
+          <SheetClose asChild>
+            <Button className="w-full" onClick={saveConfig}>
+              Salvar configiração
+            </Button>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>
