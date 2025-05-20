@@ -13,17 +13,28 @@ import {
 import { Separator } from "@/app/_components/ui/separator";
 import { Switch } from "@/app/_components/ui/switch";
 import { Button } from "@/app/_components/ui/button";
+import { TbEraser } from "react-icons/tb";
 
 interface SessionConfigProps {
   toggleAllReveal: (reveal: boolean) => void;
   allRevealed: boolean;
+  clearAllAnswers: () => void;
 }
 
-function SessionConfig({ toggleAllReveal, allRevealed }: SessionConfigProps) {
+function SessionConfig({
+  toggleAllReveal,
+  allRevealed,
+  clearAllAnswers,
+}: SessionConfigProps) {
   const [isRevealAll, setIsRevealAll] = useState(allRevealed);
+  const [isClearAll, setIsClearAll] = useState(false);
 
   const saveConfig = () => {
     toggleAllReveal(isRevealAll);
+
+    if (isClearAll) {
+      clearAllAnswers();
+    }
   };
 
   return (
@@ -47,6 +58,17 @@ function SessionConfig({ toggleAllReveal, allRevealed }: SessionConfigProps) {
           <div className="flex items-center justify-between">
             <span className="font-semibold">Revelar todas</span>
             <Switch onCheckedChange={setIsRevealAll} checked={isRevealAll} />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Limpar respostas</span>
+            <Button
+              size={"icon"}
+              className="[&_svg]:size-5"
+              variant={isClearAll ? "default" : "outline"}
+              onClick={() => setIsClearAll((old) => !old)}
+            >
+              <TbEraser />
+            </Button>
           </div>
         </div>
         <div className="px-2">

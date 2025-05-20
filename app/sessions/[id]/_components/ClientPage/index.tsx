@@ -104,7 +104,6 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
             />
           ))}
         </div>
-        <button onClick={clearAllAnswers}>clearAllAnswers</button>
         <div className="flex h-full items-center gap-2">
           <SaveIndicator saveStatus={saveStatus} />
           <button
@@ -122,6 +121,7 @@ function ClientPage({ questions, sessionId }: ClientPageProps) {
             )}
           </button>
           <SessionConfig
+            clearAllAnswers={clearAllAnswers}
             allRevealed={allRevealed}
             toggleAllReveal={(reveal: boolean) =>
               dispatch({
