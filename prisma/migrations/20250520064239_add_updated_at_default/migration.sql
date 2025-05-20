@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "modules" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "questions" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;

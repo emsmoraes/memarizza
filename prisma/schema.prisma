@@ -62,16 +62,19 @@ model VerificationToken {
 }
 
 model Module {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
   userId      String
   parentId    String?
-  public      Boolean?   @default(true)
-  clones      Int?       @default(0)
-  parent      Module?    @relation("ModuleHierarchy", fields: [parentId], references: [id])
-  submodules  Module[]   @relation("ModuleHierarchy")
-  questions   Question[]
+  public      Boolean? @default(true)
+  clones      Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  parent     Module?    @relation("ModuleHierarchy", fields: [parentId], references: [id])
+  submodules Module[]   @relation("ModuleHierarchy")
+  questions  Question[]
 
   user                 User                  @relation(fields: [userId], references: [id])
   moduleSessionModules ModuleSessionModule[]
@@ -80,13 +83,16 @@ model Module {
 }
 
 model Question {
-  id                    String                  @id @default(cuid())
-  text                  String
-  public                Boolean                 @default(true)
-  type                  QuestionType
-  moduleId              String
-  module                Module                  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  options               Option[]
+  id        String       @id @default(cuid())
+  text      String
+  public    Boolean      @default(true)
+  type      QuestionType
+  moduleId  String
+  module    Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  options   Option[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now()) @updatedAt
+
   answer                Answer?                 @relation("QuestionToAnswer")
   moduleSessionQuestion ModuleSessionQuestion[]
 

@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import {
   SidebarFooter,
@@ -16,7 +17,7 @@ function NavbarFooter() {
   const user = data?.user;
 
   const handleLogout = () => {
-    signOut();
+    signOut({ callbackUrl: "/" });
   };
 
   const handleLogin = () => {
