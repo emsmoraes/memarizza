@@ -1,4 +1,4 @@
-import { LuHome } from "react-icons/lu";
+import { GoHome } from "react-icons/go";
 import { PiTreeViewDuotone } from "react-icons/pi";
 import { IoFileTrayFullOutline } from "react-icons/io5";
 
@@ -6,7 +6,7 @@ export const links = [
   {
     title: "Principal",
     url: "/",
-    icon: LuHome,
+    icon: GoHome,
   },
   {
     title: "Modulos",
