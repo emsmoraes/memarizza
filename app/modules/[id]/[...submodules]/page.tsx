@@ -11,15 +11,18 @@ import ListModulesAndQuestions from "../../_components/ListModulesAndQuestions";
 import ImportQuestions from "../../_components/ImportQuestions";
 import StartModuleSession from "../../_components/StartModuleSession";
 
-interface ModuleProps {
-  params: {
+type ModuleProps = {
+  params: Promise<{
     submodules: string[];
-  };
-}
+  }>;
+};
 
 async function Module({ params }: ModuleProps) {
+  const resolvedParams = await params;
+  const currentSubmoduleId =
+    resolvedParams.submodules[resolvedParams.submodules.length - 1];
+
   const session = await getServerSession(authOptions);
-  const currentSubmoduleId = params.submodules[params.submodules.length - 1];
 
   const moduleData = await db.module.findUnique({
     where: {
@@ -45,22 +48,22 @@ async function Module({ params }: ModuleProps) {
   });
 
   const moduleSession = await db.moduleSession.findMany({
-      where: {
-        moduleSessionModules: {
-          some: {
-            moduleId: currentSubmoduleId,
-          },
+    where: {
+      moduleSessionModules: {
+        some: {
+          moduleId: currentSubmoduleId,
         },
       },
-      include: {
-        moduleSessionModules: true,
-        moduleSessionQuestion: {
-          include: {
-            question: true,
-          },
+    },
+    include: {
+      moduleSessionModules: true,
+      moduleSessionQuestion: {
+        include: {
+          question: true,
         },
       },
-    }); 
+    },
+  });
 
   return (
     <Dialog>
@@ -73,7 +76,7 @@ async function Module({ params }: ModuleProps) {
             hasQuestions={childrenQuestions.length > 0}
             moduleId={currentSubmoduleId}
           />
-          <ImportQuestions moduleId={currentSubmoduleId}/>
+          <ImportQuestions moduleId={currentSubmoduleId} />
         </div>
 
         <StartModuleSession

@@ -3,12 +3,15 @@ import moment from "moment";
 import ClientPage from "./_components/ClientPage";
 import SessionPageHeader from "./_components/SessionPageHeader";
 
-interface SessionPageProps {
-  params: { id: string };
-}
+type SessionPageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
 
 export default async function SessionPage({ params }: SessionPageProps) {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   const userModuleSession = await db.moduleSession.findFirst({
     where: {
@@ -36,7 +39,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
       },
     },
     orderBy: {
-      position: 'asc',
+      position: "asc",
     },
   });
 
@@ -48,12 +51,12 @@ export default async function SessionPage({ params }: SessionPageProps) {
   );
 
   return (
-    <div className="flex flex-col h-full max-h-full">
+    <div className="flex h-full max-h-full flex-col">
       <SessionPageHeader
         text={`${parentModule?.module.name} - ${moment(userModuleSession?.createdAt).format("DD/MM/YYYY")}`}
       />
 
-      <ClientPage questions={userQuestions} sessionId={id}/>
+      <ClientPage questions={userQuestions} sessionId={id} />
     </div>
   );
 }

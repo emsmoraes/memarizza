@@ -11,15 +11,16 @@ import StartModuleSession from "../_components/StartModuleSession";
 import ListModulesAndQuestions from "../_components/ListModulesAndQuestions";
 import ImportQuestions from "../_components/ImportQuestions";
 
-interface ModuleProps {
-  params: {
+type ModuleProps = {
+  params: Promise<{
     id: string;
-  };
-}
+  }>;
+};
 
 async function Module({ params }: ModuleProps) {
+  const resolvedParams = await params;
   const session = await getServerSession(authOptions);
-  const moduleId = params.id
+  const moduleId = resolvedParams.id;
 
   const moduleData = await db.module.findUnique({
     where: {
@@ -43,7 +44,7 @@ async function Module({ params }: ModuleProps) {
         },
       },
     },
-  }); 
+  });
 
   const childrenModules =
     (await db.module.findMany({
@@ -75,7 +76,7 @@ async function Module({ params }: ModuleProps) {
             hasQuestions={childrenQuestions.length > 0}
             moduleId={moduleId}
           />
-          <ImportQuestions moduleId={moduleId}/>
+          <ImportQuestions moduleId={moduleId} />
         </div>
 
         <StartModuleSession
