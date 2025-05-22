@@ -36,7 +36,7 @@ export default async function Home() {
         <div className="aspect-video rounded-xl bg-muted/50" />
         <div className="aspect-video rounded-xl bg-muted/50" />
       </div>
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min mt-6" />
+      <div className="mt-6 min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
     </div>
   );
 
@@ -45,7 +45,7 @@ export default async function Home() {
       <div className="flex h-full flex-col">
         <PageHeader />
 
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="no-scrollbar mb-5 flex items-center justify-between gap-3 overflow-x-scroll">
           {Object.entries(resumeData).map(([nome, valor]) => (
             <ResumeItem key={nome} nome={nome} valor={valor as number} />
           ))}
