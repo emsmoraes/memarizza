@@ -66,28 +66,6 @@ pnpm dev
 
 5. Acesse a aplicação em `http://localhost:3000`
 
-## 🛠️ Scripts Disponíveis
-
-- `npm run dev`: Inicia o servidor de desenvolvimento
-- `npm run build`: Cria a build de produção
-- `npm run start`: Inicia o servidor de produção
-- `npm run lint`: Executa a verificação de linting
-- `npm run create:questions`: Executa o script de criação de questões
-
-## 🏗️ Estrutura do Projeto
-
-```
-├── app/                    # Diretório principal da aplicação
-│   ├── api/               # Rotas da API
-│   ├── _components/       # Componentes reutilizáveis
-│   ├── _contexts/         # Contextos React
-│   ├── _providers/        # Providers da aplicação
-│   ├── _services/         # Serviços e lógica de negócio
-│   └── modules/           # Módulos da aplicação
-├── prisma/                # Configuração e modelos do Prisma
-├── public/                # Arquivos estáticos
-└── lib/                   # Utilitários e configurações
-```
 
 ## 🔧 Tecnologias Principais
 
@@ -166,5 +144,3 @@ model ModuleSession {
   // ... outros campos
 }
 ```
-
-Estas soluções permitem uma experiência de estudo fluida e personalizada, mantendo a integridade dos dados e a performance da aplicação.
