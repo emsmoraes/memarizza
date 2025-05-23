@@ -50,9 +50,11 @@ pnpm install
 3. Configure as variáveis de ambiente:
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 ```env
-DATABASE_URL="sua_url_do_banco_de_dados"
-NEXTAUTH_SECRET="seu_secret"
-NEXTAUTH_URL="http://localhost:3000"
+DATABASE_URL="..."
+NEXTAUTH_SECRET=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+OPENAI_API_KEY=...
 ```
 
 4. Inicie o servidor de desenvolvimento:
