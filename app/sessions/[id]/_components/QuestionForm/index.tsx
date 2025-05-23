@@ -4,7 +4,6 @@ import { Button } from "@/app/_components/ui/button";
 import React from "react";
 import QuestionOption from "../QuestionOption";
 import { HiMiniArrowRight } from "react-icons/hi2";
-import { LuCheck } from "react-icons/lu";
 import { Switch } from "@/app/_components/ui/switch";
 import { Label } from "@/app/_components/ui/label";
 
