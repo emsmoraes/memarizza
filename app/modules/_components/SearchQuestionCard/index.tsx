@@ -82,7 +82,7 @@ function SearchQuestionCard({
         </div>
 
         <button
-          className={`absolute right-2 top-2 hidden p-1 text-white ${
+          className={`absolute right-2 top-2 hidden p-1 text-foreground ${
             isSelected ? "" : "opacity-50 hover:opacity-100"
           } transition-transform duration-200 hover:scale-110 group-hover:block`}
           onClick={(e) => {

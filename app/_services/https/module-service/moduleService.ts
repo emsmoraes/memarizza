@@ -56,36 +56,97 @@ export const addModule = async (
 
 export const removeModule = async (moduleId: string) => {
     try {
-        await db.moduleSessionModule.deleteMany({
+      const submodules = await db.module.findMany({
+        where: {
+          parentId: moduleId,
+        },
+      });
+  
+      for (const submodule of submodules) {
+        await removeModule(submodule.id);
+      }
+  
+      const questions = await db.question.findMany({
+        where: {
+          moduleId,
+        },
+        select: {
+          id: true,
+        },
+      });
+  
+      const questionIds = questions.map((q) => q.id);
+  
+      await db.moduleSessionQuestion.deleteMany({
+        where: {
+          questionId: {
+            in: questionIds,
+          },
+        },
+      });
+  
+      await db.question.deleteMany({
+        where: {
+          id: {
+            in: questionIds,
+          },
+        },
+      });
+  
+      const moduleSessionModules = await db.moduleSessionModule.findMany({
+        where: {
+          moduleId,
+        },
+        select: {
+          moduleSessionId: true,
+        },
+      });
+  
+      const moduleSessionIds = [
+        ...new Set(moduleSessionModules.map((m) => m.moduleSessionId)),
+      ];
+  
+      await db.moduleSessionModule.deleteMany({
+        where: {
+          moduleId,
+        },
+      });
+  
+      await db.module.delete({
+        where: {
+          id: moduleId,
+        },
+      });
+  
+      await Promise.all(
+        moduleSessionIds.map(async (id) => {
+          const stillLinked = await db.moduleSessionModule.findFirst({
             where: {
-                moduleId,
+              moduleSessionId: id,
             },
-        });
-
-        await db.question.deleteMany({
-            where: {
-                moduleId: moduleId,
-            },
-        });
-
-        const submodules = await db.module.findMany({
-            where: {
-                parentId: moduleId,
-            },
-        });
-
-        for (const submodule of submodules) {
-            await removeModule(submodule.id);
-        }
-
-        await db.module.delete({
-            where: {
-                id: moduleId,
-            },
-        });
-
-        revalidatePath("/modules");
+          });
+  
+          if (!stillLinked) {
+            await db.moduleSessionQuestion.deleteMany({
+              where: {
+                moduleSessionId: id,
+              },
+            });
+  
+            await db.moduleSession.delete({
+              where: {
+                id,
+              },
+            });
+          }
+        })
+      );
+  
+      revalidatePath("/modules");
+      revalidatePath("/session");
     } catch (error) {
-        console.log("Erro ao excluir o módulo:", error);
+      console.error("Erro ao excluir o módulo:", error);
     }
-};
+  };
+  
+  

@@ -110,7 +110,7 @@ function QuestionCard({ question }: QuestionCardCardProps) {
             }}
           >
             <button
-              className="absolute right-2 top-2 hidden p-1 text-white opacity-50 transition-transform duration-200 hover:scale-110 hover:opacity-100 group-hover:block"
+              className="absolute right-2 top-2 hidden p-1 text-foreground opacity-50 transition-transform duration-200 hover:scale-110 hover:opacity-100 group-hover:block"
               onClick={(e) => {
                 e.stopPropagation();
               }}

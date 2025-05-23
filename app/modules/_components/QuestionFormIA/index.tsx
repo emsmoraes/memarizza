@@ -46,7 +46,7 @@ function QuestionFormIA({
 
   const handleSubmit = (formData: z.infer<typeof formSchema>) => {
     startTransition(() => {
-      callOpenAI(`usando esse prompt: "${formData.prompt}". Gere um array de questões no formato JSON válido. Cada questão deve seguir exatamente este padrão:
+      callOpenAI(`usando esse prompt: "${formData.prompt}". gere um array com no máximo 5 questões no formato **JSON válido**. Cada questão deve seguir **exatamente** o seguinte modelo (sem usar markdown):
         [
           {
             "text": "titulo aqui",
@@ -71,7 +71,7 @@ function QuestionFormIA({
             ]
           }
         ]
-        Esse prompt esta dentro de um parse, nao mande em markdown. O numero máximo de questões é 5`)
+        A resposta deve conter apenas o array JSON, sem explicações, sem texto adicional e sem formatação Markdown.`)
         .then((result) => {
           if (!result) {
             return alert(
@@ -123,7 +123,7 @@ function QuestionFormIA({
                       className={`font-inter rounded-[4px] border-gray-300 text-sm font-[400] focus:border-gray-600 ${
                         field.value?.trim() && "border-gray-600"
                       }`}
-                      placeholder="EX: 5 questões de história sobre a segunda guerra mundial"
+                      placeholder="EX: questões de história sobre a segunda guerra mundial"
                       {...field}
                     />
                   </FormControl>

@@ -32,6 +32,7 @@ interface ModuleCardProps {
 
 function ModuleCard({ module }: ModuleCardProps) {
   const [deletingModule, setDeletingModule] = useState(false);
+  const [openDeletingModule, setOpenDeletingModule] = useState(false);
   const pathname = usePathname();
 
   const handleDeleteModule = async () => {
@@ -49,7 +50,7 @@ function ModuleCard({ module }: ModuleCardProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={openDeletingModule} onOpenChange={setOpenDeletingModule}>
       <Link href={`${pathname}/${module.id}`}>
         <div
           key={module.id}
@@ -59,7 +60,7 @@ function ModuleCard({ module }: ModuleCardProps) {
             <IoFolderOutline className="text-2xl" />
           </div>
           <div>
-            <p className="w-full truncate text-base font-semibold">
+            <p className="line-clamp-1 w-full text-base font-semibold">
               {module.name}
             </p>
             <p className="line-clamp-1 w-full text-[12px]">
@@ -75,8 +76,10 @@ function ModuleCard({ module }: ModuleCardProps) {
             }}
           >
             <button
-              className="absolute right-2 top-2 hidden p-1 text-white opacity-50 transition-transform duration-200 hover:scale-110 hover:opacity-100 group-hover:block"
+              className="absolute right-2 top-2 hidden p-1 text-foreground opacity-50 transition-transform duration-200 hover:scale-110 hover:opacity-100 group-hover:block"
               onClick={(e) => {
+                setOpenDeletingModule(true);
+                e.preventDefault();
                 e.stopPropagation();
               }}
             >
@@ -93,7 +96,7 @@ function ModuleCard({ module }: ModuleCardProps) {
             &quot; ?
           </DialogTitle>
           <DialogDescription>
-            Essa ação é irreversível. Ao excluír o modulo, todas as questão
+            Essa ação é irreversível. Ao excluír o modulo, todas as questões e sessões
             serão excluídas junto
           </DialogDescription>
         </DialogHeader>
