@@ -1,8 +1,8 @@
-# MariStudy - Plataforma de Estudos Inteligente
+# Memarizza - Plataforma de Estudos Inteligente
 
 ## 📖 Sobre o Projeto
 
-MariStudy é uma plataforma moderna de estudos desenvolvida com Next.js, oferecendo uma experiência de aprendizado interativa e personalizada. O projeto utiliza tecnologias de ponta para criar um ambiente de estudo eficiente e agradável.
+Memarizza é uma plataforma moderna de estudos desenvolvida com Next.js, oferecendo uma experiência de aprendizado interativa e personalizada. O projeto utiliza tecnologias de ponta para criar um ambiente de estudo eficiente e agradável.
 
 ## 💝 Inspiração
 
@@ -35,7 +35,7 @@ A estrutura hierárquica de módulos e o sistema de sessões de estudo foram pen
 1. Clone o repositório:
 ```bash
 git clone https://github.com/emsmoraes/memarizza
-cd maristudy
+cd memarizza
 ```
 
 2. Instale as dependências:
